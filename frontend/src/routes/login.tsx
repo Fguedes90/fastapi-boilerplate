@@ -34,7 +34,7 @@ export const Route = createFileRoute("/login")({
 })
 
 function Login() {
-  const { loginMutation, error, resetError } = useAuth()
+  const { loginMutation, resetError } = useAuth()
   const form = useForm<AccessToken>({
     mode: "onBlur",
     criteriaMode: "all",
