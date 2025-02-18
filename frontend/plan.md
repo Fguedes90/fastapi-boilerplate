@@ -70,11 +70,20 @@
   - Check accessibility compliance
   - Test responsive behavior
 
+- [ ] Mapear dependências e priorização
+  - Identificar e documentar as relações entre os componentes (ex.: diagramas ou tabelas).
+  - Priorizar a migração de componentes que servem de pré-requisito para outros (por exemplo, componentes de formulário que dependem de inputs e validação).
+
 - [ ] Document modifications
   - Track changed files
   - Note any API changes
   - Record validation steps
   - Document testing results
+
+- [ ] Comunicação e Documentação contínua
+  - Estabelecer reuniões regulares de alinhamento com a equipe (ex.: reuniões semanais ou check-ins diários).
+  - Atualizar o changelog e a documentação técnica com cada alteração significativa.
+  - Registrar decisões técnicas, justificativas e aprendizados para facilitar rollbacks, se necessário.
 
 - [ ] Maintain functionality
   - Preserve existing behavior
@@ -228,6 +237,7 @@ src/
 - [ ] Visual regression tests
 - [ ] Accessibility tests
 - [ ] Performance benchmarking tests
+- [ ] Testes de integração para verificar a interação entre componentes migrados e módulos existentes, assegurando a continuidade dos fluxos da aplicação.
 
 ### Testing Tools & Approaches
 - [ ] Jest for unit testing
