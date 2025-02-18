@@ -1,31 +1,24 @@
+import * as DialogPrimitive from "@radix-ui/react-dialog"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { Controller, type SubmitHandler, useForm } from "react-hook-form"
 
 import { type UserCreate, UsersService } from "@/client"
 import type { ApiError } from "@/client/core/ApiError"
-import useCustomToast from "@/hooks/useCustomToast"
-import { emailPattern, handleError } from "@/utils"
+import { Button } from "@/components/ui/button"
 import {
-  Button,
-  DialogActionTrigger,
-  DialogTitle,
-  Flex,
-  Input,
-  Text,
-  VStack,
-} from "@chakra-ui/react"
-import { useState } from "react"
-import { FaPlus } from "react-icons/fa"
-import { Checkbox } from "../ui/checkbox"
-import {
-  DialogBody,
-  DialogCloseTrigger,
+  Dialog,
   DialogContent,
   DialogFooter,
   DialogHeader,
-  DialogRoot,
+  DialogTitle,
   DialogTrigger,
-} from "../ui/dialog"
+} from "@/components/ui/dialog"
+import { Input } from "@/components/ui/input"
+import useCustomToast from "@/hooks/useCustomToast"
+import { emailPattern, handleError } from "@/utils"
+import { useState } from "react"
+import { FaPlus } from "react-icons/fa"
+import { Checkbox } from "../ui/checkbox"
 import { Field } from "../ui/field"
 
 interface UserCreateForm extends UserCreate {
@@ -77,28 +70,23 @@ const AddUser = () => {
   }
 
   return (
-    <DialogRoot
-      size={{ base: "xs", md: "md" }}
-      placement="center"
-      open={isOpen}
-      onOpenChange={({ open }) => setIsOpen(open)}
-    >
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <Button value="add-user" my={4}>
-          <FaPlus fontSize="16px" />
+        <Button>
+          <FaPlus className="mr-2" />
           Add User
         </Button>
       </DialogTrigger>
-      <DialogContent>
+      <DialogContent className="sm:max-w-[425px]">
         <form onSubmit={handleSubmit(onSubmit)}>
           <DialogHeader>
             <DialogTitle>Add User</DialogTitle>
           </DialogHeader>
-          <DialogBody>
-            <Text mb={4}>
+          <div className="py-4">
+            <p className="text-sm text-muted-foreground mb-4">
               Fill in the form below to add a new user to the system.
-            </Text>
-            <VStack gap={4}>
+            </p>
+            <div className="flex flex-col space-y-4">
               <Field
                 required
                 invalid={!!errors.email}
@@ -167,20 +155,27 @@ const AddUser = () => {
                   type="password"
                 />
               </Field>
-            </VStack>
+            </div>
 
-            <Flex mt={4} direction="column" gap={4}>
+            <div className="flex flex-col space-y-4 mt-4">
               <Controller
                 control={control}
                 name="is_superuser"
                 render={({ field }) => (
-                  <Field disabled={field.disabled} colorPalette="teal">
-                    <Checkbox
-                      checked={field.value}
-                      onCheckedChange={({ checked }) => field.onChange(checked)}
-                    >
-                      Is superuser?
-                    </Checkbox>
+                  <Field disabled={field.disabled}>
+                    <div className="flex items-center space-x-2">
+                      <Checkbox
+                        id="is_superuser"
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                      />
+                      <label
+                        htmlFor="is_superuser"
+                        className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                      >
+                        Is superuser?
+                      </label>
+                    </div>
                   </Field>
                 )}
               />
@@ -188,42 +183,39 @@ const AddUser = () => {
                 control={control}
                 name="is_active"
                 render={({ field }) => (
-                  <Field disabled={field.disabled} colorPalette="teal">
-                    <Checkbox
-                      checked={field.value}
-                      onCheckedChange={({ checked }) => field.onChange(checked)}
-                    >
-                      Is active?
-                    </Checkbox>
+                  <Field disabled={field.disabled}>
+                    <div className="flex items-center space-x-2">
+                      <Checkbox
+                        id="is_active"
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                      />
+                      <label
+                        htmlFor="is_active"
+                        className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                      >
+                        Is active?
+                      </label>
+                    </div>
                   </Field>
                 )}
               />
-            </Flex>
-          </DialogBody>
+            </div>
+          </div>
 
-          <DialogFooter gap={2}>
-            <DialogActionTrigger asChild>
-              <Button
-                variant="subtle"
-                colorPalette="gray"
-                disabled={isSubmitting}
-              >
+          <DialogFooter>
+            <DialogPrimitive.Close asChild>
+              <Button type="button" variant="outline" disabled={isSubmitting}>
                 Cancel
               </Button>
-            </DialogActionTrigger>
-            <Button
-              variant="solid"
-              type="submit"
-              disabled={!isValid}
-              loading={isSubmitting}
-            >
+            </DialogPrimitive.Close>
+            <Button type="submit" disabled={!isValid || isSubmitting}>
               Save
             </Button>
           </DialogFooter>
         </form>
-        <DialogCloseTrigger />
       </DialogContent>
-    </DialogRoot>
+    </Dialog>
   )
 }
 

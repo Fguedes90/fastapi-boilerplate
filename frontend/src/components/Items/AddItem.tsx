@@ -1,31 +1,24 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { type SubmitHandler, useForm } from "react-hook-form"
 
-import {
-  Button,
-  DialogActionTrigger,
-  DialogTitle,
-  Input,
-  Text,
-  VStack,
-} from "@chakra-ui/react"
+import { Button } from "@/components/ui/button"
 import { useState } from "react"
 import { FaPlus } from "react-icons/fa"
 
 import { type ItemCreate, ItemsService } from "@/client"
 import type { ApiError } from "@/client/core/ApiError"
-import useCustomToast from "@/hooks/useCustomToast"
-import { handleError } from "@/utils"
 import {
-  DialogBody,
-  DialogCloseTrigger,
+  Dialog,
   DialogContent,
   DialogFooter,
   DialogHeader,
-  DialogRoot,
+  DialogTitle,
   DialogTrigger,
-} from "../ui/dialog"
-import { Field } from "../ui/field"
+} from "@/components/ui/dialog"
+import { Field } from "@/components/ui/field"
+import { Input } from "@/components/ui/input"
+import useCustomToast from "@/hooks/useCustomToast"
+import { handleError } from "@/utils"
 
 const AddItem = () => {
   const [isOpen, setIsOpen] = useState(false)
@@ -66,15 +59,10 @@ const AddItem = () => {
   }
 
   return (
-    <DialogRoot
-      size={{ base: "xs", md: "md" }}
-      placement="center"
-      open={isOpen}
-      onOpenChange={({ open }) => setIsOpen(open)}
-    >
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <Button value="add-item" my={4}>
-          <FaPlus fontSize="16px" />
+        <Button variant="outline">
+          <FaPlus className="mr-2" />
           Add Item
         </Button>
       </DialogTrigger>
@@ -83,9 +71,9 @@ const AddItem = () => {
           <DialogHeader>
             <DialogTitle>Add Item</DialogTitle>
           </DialogHeader>
-          <DialogBody>
-            <Text mb={4}>Fill in the details to add a new item.</Text>
-            <VStack gap={4}>
+          <div className="py-4">
+            <p className="mb-4">Fill in the details to add a new item.</p>
+            <div className="space-y-4">
               <Field
                 required
                 invalid={!!errors.title}
@@ -114,32 +102,26 @@ const AddItem = () => {
                   type="text"
                 />
               </Field>
-            </VStack>
-          </DialogBody>
+            </div>
+          </div>
 
-          <DialogFooter gap={2}>
-            <DialogActionTrigger asChild>
+          <DialogFooter>
+            <div className="flex gap-2">
               <Button
-                variant="subtle"
-                colorPalette="gray"
-                disabled={isSubmitting}
+                type="button"
+                variant="outline"
+                onClick={() => setIsOpen(false)}
               >
                 Cancel
               </Button>
-            </DialogActionTrigger>
-            <Button
-              variant="solid"
-              type="submit"
-              disabled={!isValid}
-              loading={isSubmitting}
-            >
-              Save
-            </Button>
+              <Button type="submit" disabled={!isValid} variant="default">
+                Save
+              </Button>
+            </div>
           </DialogFooter>
         </form>
-        <DialogCloseTrigger />
       </DialogContent>
-    </DialogRoot>
+    </Dialog>
   )
 }
 

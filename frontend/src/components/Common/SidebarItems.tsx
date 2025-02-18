@@ -1,4 +1,3 @@
-import { Box, Flex, Icon, Text } from "@chakra-ui/react"
 import { useQueryClient } from "@tanstack/react-query"
 import { Link as RouterLink } from "@tanstack/react-router"
 import { FiBriefcase, FiHome, FiSettings, FiUsers } from "react-icons/fi"
@@ -32,28 +31,26 @@ const SidebarItems = ({ onClose }: SidebarItemsProps) => {
 
   const listItems = finalItems.map(({ icon, title, path }) => (
     <RouterLink key={title} to={path} onClick={onClose}>
-      <Flex
+      <div
+        className="flex"
         gap={4}
-        px={4}
-        py={2}
         _hover={{
           background: "gray.subtle",
         }}
-        alignItems="center"
         fontSize="sm"
       >
         <Icon as={icon} alignSelf="center" />
-        <Text ml={2}>{title}</Text>
-      </Flex>
+        <p>{title}</p>
+      </div>
     </RouterLink>
   ))
 
   return (
     <>
-      <Text fontSize="xs" px={4} py={2} fontWeight="bold">
+      <p fontSize="xs" fontWeight="bold">
         Menu
-      </Text>
-      <Box>{listItems}</Box>
+      </p>
+      <div>{listItems}</div>
     </>
   )
 }

@@ -1,9 +1,9 @@
 import axios from "axios"
 import type {
   AxiosError,
+  AxiosInstance,
   AxiosRequestConfig,
   AxiosResponse,
-  AxiosInstance,
 } from "axios"
 
 import { ApiError } from "./ApiError"
@@ -57,15 +57,15 @@ export const getQueryString = (params: Record<string, unknown>): string => {
     if (value instanceof Date) {
       append(key, value.toISOString())
     } else if (Array.isArray(value)) {
-      value.forEach((v) => encodePair(key, v))
+      valuefor (const v of encodePair(key, v))
     } else if (typeof value === "object") {
-      Object.entries(value).forEach(([k, v]) => encodePair(`${key}[${k}]`, v))
+      Object.entries(value)for (const [k, v] of encodePair(`${key}[${k}]`, v))
     } else {
       append(key, value)
     }
   }
 
-  Object.entries(params).forEach(([key, value]) => encodePair(key, value))
+  Object.entries(params)for (const [key, value] of encodePair(key, value))
 
   return qs.length ? `?${qs.join("&")}` : ""
 }
@@ -102,9 +102,9 @@ export const getFormData = (
 
     Object.entries(options.formData)
       .filter(([, value]) => value !== undefined && value !== null)
-      .forEach(([key, value]) => {
+      for (const [key, value] of 
         if (Array.isArray(value)) {
-          value.forEach((v) => process(key, v))
+          valuefor (const v of process(key, v))
         } else {
           process(key, value)
         }
@@ -157,12 +157,12 @@ export const getHeaders = async <T>(
     )
 
   if (isStringWithValue(token)) {
-    headers["Authorization"] = `Bearer ${token}`
+    headers.Authorization = `Bearer ${token}`
   }
 
   if (isStringWithValue(username) && isStringWithValue(password)) {
     const credentials = base64(`${username}:${password}`)
-    headers["Authorization"] = `Basic ${credentials}`
+    headers.Authorization = `Basic ${credentials}`
   }
 
   if (options.body !== undefined) {

@@ -1,4 +1,4 @@
-import { Box, Button, Flex, Text } from "@chakra-ui/react"
+import { Button } from "@shadcn/ui"
 import { Link } from "@tanstack/react-router"
 import { FaUserAstronaut } from "react-icons/fa"
 import { FiLogOut, FiUser } from "react-icons/fi"
@@ -16,17 +16,12 @@ const UserMenu = () => {
   return (
     <>
       {/* Desktop */}
-      <Flex>
+      <div className="flex">
         <MenuRoot>
           <MenuTrigger asChild p={2}>
-            <Button
-              data-testid="user-menu"
-              variant="solid"
-              maxW="150px"
-              truncate
-            >
+            <Button data-testid="user-menu" maxW="150px" truncate>
               <FaUserAstronaut fontSize="18" />
-              <Text>{user?.full_name || "User"}</Text>
+              <p>{user?.full_name || "User"}</p>
             </Button>
           </MenuTrigger>
 
@@ -36,18 +31,16 @@ const UserMenu = () => {
                 closeOnSelect
                 value="user-settings"
                 gap={2}
-                py={2}
                 style={{ cursor: "pointer" }}
               >
                 <FiUser fontSize="18px" />
-                <Box flex="1">My Profile</Box>
+                <div flex="1">My Profile</div>
               </MenuItem>
             </Link>
 
             <MenuItem
               value="logout"
               gap={2}
-              py={2}
               onClick={handleLogout}
               style={{ cursor: "pointer" }}
             >
@@ -56,7 +49,7 @@ const UserMenu = () => {
             </MenuItem>
           </MenuContent>
         </MenuRoot>
-      </Flex>
+      </div>
     </>
   )
 }

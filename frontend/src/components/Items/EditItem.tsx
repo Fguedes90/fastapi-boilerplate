@@ -1,30 +1,22 @@
-import {
-  Button,
-  ButtonGroup,
-  DialogActionTrigger,
-  Input,
-  Text,
-  VStack,
-} from "@chakra-ui/react"
+import { Button } from "@/components/ui/button"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { useState } from "react"
 import { type SubmitHandler, useForm } from "react-hook-form"
 import { FaExchangeAlt } from "react-icons/fa"
 
 import { type ApiError, type ItemPublic, ItemsService } from "@/client"
-import useCustomToast from "@/hooks/useCustomToast"
-import { handleError } from "@/utils"
 import {
-  DialogBody,
-  DialogCloseTrigger,
+  Dialog,
   DialogContent,
   DialogFooter,
   DialogHeader,
-  DialogRoot,
   DialogTitle,
   DialogTrigger,
-} from "../ui/dialog"
-import { Field } from "../ui/field"
+} from "@/components/ui/dialog"
+import { Field } from "@/components/ui/field"
+import { Input } from "@/components/ui/input"
+import useCustomToast from "@/hooks/useCustomToast"
+import { handleError } from "@/utils"
 
 interface EditItemProps {
   item: ItemPublic
@@ -74,15 +66,10 @@ const EditItem = ({ item }: EditItemProps) => {
   }
 
   return (
-    <DialogRoot
-      size={{ base: "xs", md: "md" }}
-      placement="center"
-      open={isOpen}
-      onOpenChange={({ open }) => setIsOpen(open)}
-    >
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <Button variant="ghost">
-          <FaExchangeAlt fontSize="16px" />
+        <Button variant="outline">
+          <FaExchangeAlt className="mr-2" />
           Edit Item
         </Button>
       </DialogTrigger>
@@ -91,9 +78,9 @@ const EditItem = ({ item }: EditItemProps) => {
           <DialogHeader>
             <DialogTitle>Edit Item</DialogTitle>
           </DialogHeader>
-          <DialogBody>
-            <Text mb={4}>Update the item details below.</Text>
-            <VStack gap={4}>
+          <div className="py-4">
+            <p className="mb-4">Update the item details below.</p>
+            <div className="space-y-4">
               <Field
                 required
                 invalid={!!errors.title}
@@ -122,29 +109,26 @@ const EditItem = ({ item }: EditItemProps) => {
                   type="text"
                 />
               </Field>
-            </VStack>
-          </DialogBody>
+            </div>
+          </div>
 
-          <DialogFooter gap={2}>
-            <ButtonGroup>
-              <DialogActionTrigger asChild>
-                <Button
-                  variant="subtle"
-                  colorPalette="gray"
-                  disabled={isSubmitting}
-                >
-                  Cancel
-                </Button>
-              </DialogActionTrigger>
-              <Button variant="solid" type="submit" loading={isSubmitting}>
+          <DialogFooter>
+            <div className="flex gap-2">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setIsOpen(false)}
+              >
+                Cancel
+              </Button>
+              <Button type="submit" disabled={isSubmitting}>
                 Save
               </Button>
-            </ButtonGroup>
+            </div>
           </DialogFooter>
         </form>
-        <DialogCloseTrigger />
       </DialogContent>
-    </DialogRoot>
+    </Dialog>
   )
 }
 

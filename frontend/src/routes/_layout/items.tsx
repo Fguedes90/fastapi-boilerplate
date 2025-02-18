@@ -1,11 +1,3 @@
-import {
-  Container,
-  EmptyState,
-  Flex,
-  Heading,
-  Table,
-  VStack,
-} from "@chakra-ui/react"
 import { useQuery } from "@tanstack/react-query"
 import { createFileRoute, useNavigate } from "@tanstack/react-router"
 import { FiSearch } from "react-icons/fi"
@@ -15,12 +7,14 @@ import { ItemsService } from "@/client"
 import { ItemActionsMenu } from "@/components/Common/ItemActionsMenu"
 import AddItem from "@/components/Items/AddItem"
 import PendingItems from "@/components/Pending/PendingItems"
+import { EmptyState } from "@/components/ui/empty-state"
 import {
   PaginationItems,
   PaginationNextTrigger,
   PaginationPrevTrigger,
   PaginationRoot,
-} from "@/components/ui/pagination.tsx"
+} from "@/components/ui/pagination"
+import { Table } from "@/components/ui/table"
 
 const itemsSearchSchema = z.object({
   page: z.number().catch(1),
@@ -52,7 +46,7 @@ function ItemsTable() {
 
   const setPage = (page: number) =>
     navigate({
-      search: (prev: { [key: string]: string }) => ({ ...prev, page }),
+      search: () => ({ page }),
     })
 
   const items = data?.data.slice(0, PER_PAGE) ?? []
@@ -67,14 +61,14 @@ function ItemsTable() {
       <EmptyState.Root>
         <EmptyState.Content>
           <EmptyState.Indicator>
-            <FiSearch />
+            <FiSearch className="h-6 w-6" />
           </EmptyState.Indicator>
-          <VStack textAlign="center">
+          <div className="flex flex-col space-y-4">
             <EmptyState.Title>You don't have any items yet</EmptyState.Title>
             <EmptyState.Description>
               Add a new item to get started
             </EmptyState.Description>
-          </VStack>
+          </div>
         </EmptyState.Content>
       </EmptyState.Root>
     )
@@ -82,7 +76,7 @@ function ItemsTable() {
 
   return (
     <>
-      <Table.Root size={{ base: "sm", md: "md" }}>
+      <Table.Root>
         <Table.Header>
           <Table.Row>
             <Table.ColumnHeader w="30%">ID</Table.ColumnHeader>
@@ -101,44 +95,44 @@ function ItemsTable() {
                 {item.title}
               </Table.Cell>
               <Table.Cell
-                color={!item.description ? "gray" : "inherit"}
                 truncate
                 maxW="30%"
+                className={
+                  !item.description ? "text-muted-foreground" : undefined
+                }
               >
                 {item.description || "N/A"}
               </Table.Cell>
-              <Table.Cell width="10%">
+              <Table.Cell maxW="10%">
                 <ItemActionsMenu item={item} />
               </Table.Cell>
             </Table.Row>
           ))}
         </Table.Body>
       </Table.Root>
-      <Flex justifyContent="flex-end" mt={4}>
+      <div className="flex justify-center mt-4">
         <PaginationRoot
           count={count}
           pageSize={PER_PAGE}
           onPageChange={({ page }) => setPage(page)}
         >
-          <Flex>
+          <div className="flex items-center gap-2">
             <PaginationPrevTrigger />
             <PaginationItems />
             <PaginationNextTrigger />
-          </Flex>
+          </div>
         </PaginationRoot>
-      </Flex>
+      </div>
     </>
   )
 }
 
 function Items() {
   return (
-    <Container maxW="full">
-      <Heading size="lg" pt={12}>
-        Items Management
-      </Heading>
+    <div className="container mx-auto px-4">
+      <h1 className="text-2xl font-bold mb-4">Items Management</h1>
       <AddItem />
       <ItemsTable />
-    </Container>
+    </div>
   )
 }

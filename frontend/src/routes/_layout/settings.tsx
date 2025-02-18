@@ -1,10 +1,10 @@
-import { Container, Heading, Tabs } from "@chakra-ui/react"
 import { createFileRoute } from "@tanstack/react-router"
 
 import Appearance from "@/components/UserSettings/Appearance"
 import ChangePassword from "@/components/UserSettings/ChangePassword"
 import DeleteAccount from "@/components/UserSettings/DeleteAccount"
 import UserInformation from "@/components/UserSettings/UserInformation"
+import { Tabs } from "@/components/ui/tabs"
 import useAuth from "@/hooks/useAuth"
 
 const tabsConfig = [
@@ -29,12 +29,12 @@ function UserSettings() {
   }
 
   return (
-    <Container maxW="full">
-      <Heading size="lg" textAlign={{ base: "center", md: "left" }} py={12}>
+    <div className="container mx-auto px-4 w-full">
+      <h1 className="text-2xl font-bold text-center md:text-left mb-6">
         User Settings
-      </Heading>
+      </h1>
 
-      <Tabs.Root defaultValue="my-profile" variant="subtle">
+      <Tabs.Root defaultValue="my-profile">
         <Tabs.List>
           {finalTabs.map((tab) => (
             <Tabs.Trigger key={tab.value} value={tab.value}>
@@ -48,6 +48,6 @@ function UserSettings() {
           </Tabs.Content>
         ))}
       </Tabs.Root>
-    </Container>
+    </div>
   )
 }

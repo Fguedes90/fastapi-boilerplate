@@ -1,6 +1,11 @@
-import { IconButton } from "@chakra-ui/react"
+import { Button } from "@/components/ui/button"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 import { BsThreeDotsVertical } from "react-icons/bs"
-import { MenuContent, MenuRoot, MenuTrigger } from "../ui/menu"
 
 import type { ItemPublic } from "@/client"
 import DeleteItem from "../Items/DeleteItem"
@@ -12,16 +17,22 @@ interface ItemActionsMenuProps {
 
 export const ItemActionsMenu = ({ item }: ItemActionsMenuProps) => {
   return (
-    <MenuRoot>
-      <MenuTrigger asChild>
-        <IconButton variant="ghost" color="inherit">
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button variant="ghost" size="icon">
           <BsThreeDotsVertical />
-        </IconButton>
-      </MenuTrigger>
-      <MenuContent>
-        <EditItem item={item} />
-        <DeleteItem id={item.id} />
-      </MenuContent>
-    </MenuRoot>
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent>
+        <DropdownMenuItem>
+          <EditItem item={item} />
+        </DropdownMenuItem>
+        <DropdownMenuItem>
+          <DeleteItem id={item.id} />
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
   )
 }
+
+export default ItemActionsMenu

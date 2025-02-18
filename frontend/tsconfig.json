@@ -17,11 +17,27 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
+    "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/*"]
-    }
+      "@/*": ["./src/*"],
+      "client/*": ["./src/client/*"],
+      "components/*": ["./src/components/*"],
+      "hooks/*": ["./src/hooks/*"],
+      "lib/*": ["./src/lib/*"],
+      "routes/*": ["./src/routes/*"],
+      "theme/*": ["./src/theme/*"]
+    },
+    "typeRoots": ["./node_modules/@types", "./src"],
+    "types": []
   },
-  "include": ["src/**/*.ts", "tests/**/*.ts", "playwright.config.ts"],
+  "include": [
+    "src/**/*.ts",
+    "src/**/*.tsx",
+    "tests/**/*.ts",
+    "tests/**/*.tsx",
+    "playwright.config.ts",
+    "src/types.d.ts"
+  ],
   "references": [
     {
       "path": "./tsconfig.node.json"

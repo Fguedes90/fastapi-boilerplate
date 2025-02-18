@@ -1,32 +1,24 @@
+import * as DialogPrimitive from "@radix-ui/react-dialog"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
-import { Controller, type SubmitHandler, useForm } from "react-hook-form"
-
-import {
-  Button,
-  DialogActionTrigger,
-  DialogRoot,
-  DialogTrigger,
-  Flex,
-  Input,
-  Text,
-  VStack,
-} from "@chakra-ui/react"
 import { useState } from "react"
+import { Controller, type SubmitHandler, useForm } from "react-hook-form"
 import { FaExchangeAlt } from "react-icons/fa"
 
 import { type UserPublic, type UserUpdate, UsersService } from "@/client"
 import type { ApiError } from "@/client/core/ApiError"
-import useCustomToast from "@/hooks/useCustomToast"
-import { emailPattern, handleError } from "@/utils"
-import { Checkbox } from "../ui/checkbox"
+import { Button } from "@/components/ui/button"
 import {
-  DialogBody,
-  DialogCloseTrigger,
+  Dialog,
   DialogContent,
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "../ui/dialog"
+  DialogTrigger,
+} from "@/components/ui/dialog"
+import { Input } from "@/components/ui/input"
+import useCustomToast from "@/hooks/useCustomToast"
+import { emailPattern, handleError } from "@/utils"
+import { Checkbox } from "../ui/checkbox"
 import { Field } from "../ui/field"
 
 interface EditUserProps {
@@ -78,26 +70,23 @@ const EditUser = ({ user }: EditUserProps) => {
   }
 
   return (
-    <DialogRoot
-      size={{ base: "xs", md: "md" }}
-      placement="center"
-      open={isOpen}
-      onOpenChange={({ open }) => setIsOpen(open)}
-    >
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <Button variant="ghost" size="sm">
-          <FaExchangeAlt fontSize="16px" />
-          Edit User
+        <Button size="icon" variant="ghost">
+          <FaExchangeAlt className="h-4 w-4" />
+          <span className="sr-only">Edit User</span>
         </Button>
       </DialogTrigger>
-      <DialogContent>
+      <DialogContent className="sm:max-w-[425px]">
         <form onSubmit={handleSubmit(onSubmit)}>
           <DialogHeader>
             <DialogTitle>Edit User</DialogTitle>
           </DialogHeader>
-          <DialogBody>
-            <Text mb={4}>Update the user details below.</Text>
-            <VStack gap={4}>
+          <div className="py-4">
+            <p className="text-sm text-muted-foreground mb-4">
+              Update the user details below.
+            </p>
+            <div className="flex flex-col space-y-4">
               <Field
                 required
                 invalid={!!errors.email}
@@ -129,7 +118,6 @@ const EditUser = ({ user }: EditUserProps) => {
               </Field>
 
               <Field
-                required
                 invalid={!!errors.password}
                 errorText={errors.password?.message}
                 label="Set Password"
@@ -148,7 +136,6 @@ const EditUser = ({ user }: EditUserProps) => {
               </Field>
 
               <Field
-                required
                 invalid={!!errors.confirm_password}
                 errorText={errors.confirm_password?.message}
                 label="Confirm Password"
@@ -157,6 +144,7 @@ const EditUser = ({ user }: EditUserProps) => {
                   id="confirm_password"
                   {...register("confirm_password", {
                     validate: (value) =>
+                      !getValues().password ||
                       value === getValues().password ||
                       "The passwords do not match",
                   })}
@@ -164,20 +152,27 @@ const EditUser = ({ user }: EditUserProps) => {
                   type="password"
                 />
               </Field>
-            </VStack>
+            </div>
 
-            <Flex mt={4} direction="column" gap={4}>
+            <div className="flex flex-col space-y-4 mt-4">
               <Controller
                 control={control}
                 name="is_superuser"
                 render={({ field }) => (
-                  <Field disabled={field.disabled} colorPalette="teal">
-                    <Checkbox
-                      checked={field.value}
-                      onCheckedChange={({ checked }) => field.onChange(checked)}
-                    >
-                      Is superuser?
-                    </Checkbox>
+                  <Field disabled={field.disabled}>
+                    <div className="flex items-center space-x-2">
+                      <Checkbox
+                        id="is_superuser"
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                      />
+                      <label
+                        htmlFor="is_superuser"
+                        className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                      >
+                        Is superuser?
+                      </label>
+                    </div>
                   </Field>
                 )}
               />
@@ -185,37 +180,39 @@ const EditUser = ({ user }: EditUserProps) => {
                 control={control}
                 name="is_active"
                 render={({ field }) => (
-                  <Field disabled={field.disabled} colorPalette="teal">
-                    <Checkbox
-                      checked={field.value}
-                      onCheckedChange={({ checked }) => field.onChange(checked)}
-                    >
-                      Is active?
-                    </Checkbox>
+                  <Field disabled={field.disabled}>
+                    <div className="flex items-center space-x-2">
+                      <Checkbox
+                        id="is_active"
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                      />
+                      <label
+                        htmlFor="is_active"
+                        className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                      >
+                        Is active?
+                      </label>
+                    </div>
                   </Field>
                 )}
               />
-            </Flex>
-          </DialogBody>
+            </div>
+          </div>
 
-          <DialogFooter gap={2}>
-            <DialogActionTrigger asChild>
-              <Button
-                variant="subtle"
-                colorPalette="gray"
-                disabled={isSubmitting}
-              >
+          <DialogFooter>
+            <DialogPrimitive.Close asChild>
+              <Button type="button" variant="outline" disabled={isSubmitting}>
                 Cancel
               </Button>
-            </DialogActionTrigger>
-            <Button variant="solid" type="submit" loading={isSubmitting}>
+            </DialogPrimitive.Close>
+            <Button type="submit" disabled={isSubmitting}>
               Save
             </Button>
           </DialogFooter>
-          <DialogCloseTrigger />
         </form>
       </DialogContent>
-    </DialogRoot>
+    </Dialog>
   )
 }
 

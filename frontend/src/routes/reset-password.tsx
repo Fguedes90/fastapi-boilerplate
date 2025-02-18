@@ -1,4 +1,3 @@
-import { Container, Heading, Text } from "@chakra-ui/react"
 import { useMutation } from "@tanstack/react-query"
 import { createFileRoute, redirect, useNavigate } from "@tanstack/react-router"
 import { type SubmitHandler, useForm } from "react-hook-form"
@@ -68,22 +67,14 @@ function ResetPassword() {
   }
 
   return (
-    <Container
-      as="form"
+    <form
+      className="container mx-auto px-4 max-w-sm flex flex-col gap-4 justify-center items-center min-h-screen"
       onSubmit={handleSubmit(onSubmit)}
-      h="100vh"
-      maxW="sm"
-      alignItems="stretch"
-      justifyContent="center"
-      gap={4}
-      centerContent
     >
-      <Heading size="xl" color="ui.main" textAlign="center" mb={2}>
-        Reset Password
-      </Heading>
-      <Text textAlign="center">
+      <h1 className="text-2xl font-bold mb-4">Reset Password</h1>
+      <p className="text-center mb-4">
         Please enter your new password and confirm it to reset your password.
-      </Text>
+      </p>
       <PasswordInput
         startElement={<FiLock />}
         type="new_password"
@@ -98,9 +89,11 @@ function ResetPassword() {
         {...register("confirm_password", confirmPasswordRules(getValues))}
         placeholder="Confirm Password"
       />
-      <Button variant="solid" type="submit">
+      <Button type="submit" className="w-full">
         Reset Password
       </Button>
-    </Container>
+    </form>
   )
 }
+
+export default ResetPassword

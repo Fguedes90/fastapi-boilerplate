@@ -1,31 +1,29 @@
-import { Flex, Image, useBreakpointValue } from "@chakra-ui/react"
+import { useIsMobile } from "@/hooks/use-mobile"
+import { cn } from "@/lib/utils"
 import { Link } from "@tanstack/react-router"
-
-import Logo from "/assets/images/fastapi-logo.svg"
 import UserMenu from "./UserMenu"
 
 function Navbar() {
-  const display = useBreakpointValue({ base: "none", md: "flex" })
+  const isMobile = useIsMobile()
 
   return (
-    <Flex
-      display={display}
-      justify="space-between"
-      position="sticky"
-      color="white"
-      align="center"
-      bg="bg.muted"
-      w="100%"
-      top={0}
-      p={4}
+    <div
+      className={cn(
+        "flex justify-between items-center sticky top-0 w-full p-4 bg-muted/50 backdrop-blur-sm",
+        isMobile ? "hidden" : "flex",
+      )}
     >
       <Link to="/">
-        <Image src={Logo} alt="Logo" w="180px" maxW="2xs" px={2} />
+        <img
+          src="/assets/images/fastapi-logo.svg"
+          alt="Logo"
+          className="w-[180px] max-w-xs h-auto"
+        />
       </Link>
-      <Flex gap={2} alignItems="center">
+      <div className="flex gap-2">
         <UserMenu />
-      </Flex>
-    </Flex>
+      </div>
+    </div>
   )
 }
 

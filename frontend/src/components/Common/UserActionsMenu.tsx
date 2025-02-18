@@ -1,6 +1,10 @@
-import { IconButton } from "@chakra-ui/react"
+import { Button } from "@/components/ui/button"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 import { BsThreeDotsVertical } from "react-icons/bs"
-import { MenuContent, MenuRoot, MenuTrigger } from "../ui/menu"
 
 import type { UserPublic } from "@/client"
 import DeleteUser from "../Admin/DeleteUser"
@@ -13,16 +17,19 @@ interface UserActionsMenuProps {
 
 export const UserActionsMenu = ({ user, disabled }: UserActionsMenuProps) => {
   return (
-    <MenuRoot>
-      <MenuTrigger asChild>
-        <IconButton variant="ghost" color="inherit" disabled={disabled}>
-          <BsThreeDotsVertical />
-        </IconButton>
-      </MenuTrigger>
-      <MenuContent>
-        <EditUser user={user} />
-        <DeleteUser id={user.id} />
-      </MenuContent>
-    </MenuRoot>
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button variant="ghost" size="icon" disabled={disabled}>
+          <BsThreeDotsVertical className="h-4 w-4" />
+          <span className="sr-only">Open menu</span>
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end" className="w-auto">
+        <div className="flex flex-col">
+          <EditUser user={user} />
+          <DeleteUser id={user.id} />
+        </div>
+      </DropdownMenuContent>
+    </DropdownMenu>
   )
 }

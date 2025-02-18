@@ -1,10 +1,6 @@
-import type { ButtonProps as ChakraButtonProps } from "@chakra-ui/react"
-import {
-  AbsoluteCenter,
-  Button as ChakraButton,
-  Span,
-  Spinner,
-} from "@chakra-ui/react"
+import { Button as ShadcnButton } from "@/components/ui/button"
+import { cn } from "@/lib/utils"
+import { Loader2 } from "lucide-react"
 import * as React from "react"
 
 interface ButtonLoadingProps {
@@ -12,29 +8,53 @@ interface ButtonLoadingProps {
   loadingText?: React.ReactNode
 }
 
-export interface ButtonProps extends ChakraButtonProps, ButtonLoadingProps {}
+export interface ButtonProps
+  extends React.ButtonHTMLAttributes<HTMLButtonElement>,
+    ButtonLoadingProps {
+  variant?:
+    | "default"
+    | "destructive"
+    | "outline"
+    | "secondary"
+    | "ghost"
+    | "link"
+  size?: "default" | "sm" | "lg" | "icon"
+}
 
 export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  function Button(props, ref) {
-    const { loading, disabled, loadingText, children, ...rest } = props
+  function Button(
+    {
+      loading,
+      disabled,
+      loadingText,
+      children,
+      className,
+      variant = "default",
+      size = "default",
+      ...rest
+    },
+    ref,
+  ) {
+    const isDisabled = loading || disabled
+
     return (
-      <ChakraButton disabled={loading || disabled} ref={ref} {...rest}>
-        {loading && !loadingText ? (
+      <ShadcnButton
+        ref={ref}
+        disabled={isDisabled}
+        className={cn(className, loading && "cursor-wait")}
+        {...rest}
+      >
+        {loading && (
           <>
-            <AbsoluteCenter display="inline-flex">
-              <Spinner size="inherit" color="inherit" />
-            </AbsoluteCenter>
-            <Span opacity={0}>{children}</Span>
+            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            {loadingText || children}
           </>
-        ) : loading && loadingText ? (
-          <>
-            <Spinner size="inherit" color="inherit" />
-            {loadingText}
-          </>
-        ) : (
-          children
         )}
-      </ChakraButton>
+
+        {!loading && children}
+      </ShadcnButton>
     )
   },
 )
+
+Button.displayName = "Button"

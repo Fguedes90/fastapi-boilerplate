@@ -1,4 +1,3 @@
-import { Container, Heading, Input, Text } from "@chakra-ui/react"
 import { useMutation } from "@tanstack/react-query"
 import { createFileRoute, redirect } from "@tanstack/react-router"
 import { type SubmitHandler, useForm } from "react-hook-form"
@@ -6,8 +5,14 @@ import { FiMail } from "react-icons/fi"
 
 import { type ApiError, LoginService } from "@/client"
 import { Button } from "@/components/ui/button"
-import { Field } from "@/components/ui/field"
-import { InputGroup } from "@/components/ui/input-group"
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormMessage,
+} from "@/components/ui/form"
+import { Input } from "@/components/ui/input"
 import { isLoggedIn } from "@/hooks/useAuth"
 import useCustomToast from "@/hooks/useCustomToast"
 import { emailPattern, handleError } from "@/utils"
@@ -28,25 +33,17 @@ export const Route = createFileRoute("/recover-password")({
 })
 
 function RecoverPassword() {
-  const {
-    register,
-    handleSubmit,
-    reset,
-    formState: { errors, isSubmitting },
-  } = useForm<FormData>()
+  const form = useForm<FormData>()
   const { showSuccessToast } = useCustomToast()
 
-  const recoverPassword = async (data: FormData) => {
-    await LoginService.recoverPassword({
-      email: data.email,
-    })
-  }
-
   const mutation = useMutation({
-    mutationFn: recoverPassword,
+    mutationFn: (data: FormData) =>
+      LoginService.recoverPassword({
+        email: data.email,
+      }),
     onSuccess: () => {
       showSuccessToast("Password recovery email sent successfully.")
-      reset()
+      form.reset()
     },
     onError: (err: ApiError) => {
       handleError(err)
@@ -58,38 +55,48 @@ function RecoverPassword() {
   }
 
   return (
-    <Container
-      as="form"
-      onSubmit={handleSubmit(onSubmit)}
-      h="100vh"
-      maxW="sm"
-      alignItems="stretch"
-      justifyContent="center"
-      gap={4}
-      centerContent
-    >
-      <Heading size="xl" color="ui.main" textAlign="center" mb={2}>
-        Password Recovery
-      </Heading>
-      <Text textAlign="center">
-        A password recovery email will be sent to the registered account.
-      </Text>
-      <Field invalid={!!errors.email} errorText={errors.email?.message}>
-        <InputGroup w="100%" startElement={<FiMail />}>
-          <Input
-            id="email"
-            {...register("email", {
-              required: "Email is required",
-              pattern: emailPattern,
-            })}
-            placeholder="Email"
-            type="email"
-          />
-        </InputGroup>
-      </Field>
-      <Button variant="solid" type="submit" loading={isSubmitting}>
-        Continue
-      </Button>
-    </Container>
+    <div className="container mx-auto px-4 min-h-screen flex flex-col items-center justify-center">
+      <div className="w-full max-w-sm space-y-4">
+        <h1 className="text-2xl font-bold text-center">Password Recovery</h1>
+        <p className="text-center text-muted-foreground">
+          A password recovery email will be sent to the registered account.
+        </p>
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+            <FormField
+              control={form.control}
+              name="email"
+              render={({ field }) => (
+                <FormItem>
+                  <FormControl>
+                    <div className="relative">
+                      <FiMail className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground h-4 w-4" />
+                      <Input
+                        placeholder="Email"
+                        type="email"
+                        className="pl-10"
+                        {...field}
+                        {...form.register("email", {
+                          required: "Email is required",
+                          pattern: emailPattern,
+                        })}
+                      />
+                    </div>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <Button
+              type="submit"
+              className="w-full"
+              disabled={form.formState.isSubmitting}
+            >
+              {form.formState.isSubmitting ? "Sending..." : "Continue"}
+            </Button>
+          </form>
+        </Form>
+      </div>
+    </div>
   )
 }

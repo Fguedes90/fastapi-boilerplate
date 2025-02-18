@@ -1,12 +1,19 @@
-import { Box, Button, Container, Heading, VStack } from "@chakra-ui/react"
 import { useMutation } from "@tanstack/react-query"
 import { type SubmitHandler, useForm } from "react-hook-form"
 import { FiLock } from "react-icons/fi"
 
 import { type ApiError, type UpdatePassword, UsersService } from "@/client"
+import { Button } from "@/components/ui/button"
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormMessage,
+} from "@/components/ui/form"
+import { PasswordInput } from "@/components/ui/password-input"
 import useCustomToast from "@/hooks/useCustomToast"
 import { confirmPasswordRules, handleError, passwordRules } from "@/utils"
-import { PasswordInput } from "../ui/password-input"
 
 interface UpdatePasswordForm extends UpdatePassword {
   confirm_password: string
@@ -14,16 +21,17 @@ interface UpdatePasswordForm extends UpdatePassword {
 
 const ChangePassword = () => {
   const { showSuccessToast } = useCustomToast()
-  const {
-    register,
-    handleSubmit,
-    reset,
-    getValues,
-    formState: { errors, isValid, isSubmitting },
-  } = useForm<UpdatePasswordForm>({
+  const form = useForm<UpdatePasswordForm>({
     mode: "onBlur",
     criteriaMode: "all",
   })
+
+  const {
+    handleSubmit,
+    reset,
+    getValues,
+    formState: { isValid, isSubmitting },
+  } = form
 
   const mutation = useMutation({
     mutationFn: (data: UpdatePassword) =>
@@ -42,51 +50,79 @@ const ChangePassword = () => {
   }
 
   return (
-    <>
-      <Container maxW="full">
-        <Heading size="sm" py={4}>
-          Change Password
-        </Heading>
-        <Box
-          w={{ sm: "full", md: "300px" }}
-          as="form"
+    <div className="container mx-auto px-4">
+      <h1 className="text-2xl font-bold mb-6">Change Password</h1>
+      <Form {...form}>
+        <form
           onSubmit={handleSubmit(onSubmit)}
+          className="w-full md:w-[300px] space-y-6"
         >
-          <VStack gap={4}>
-            <PasswordInput
-              type="current_password"
-              startElement={<FiLock />}
-              {...register("current_password", passwordRules())}
-              placeholder="Current Password"
-              errors={errors}
+          <div className="space-y-4">
+            <FormField
+              control={form.control}
+              name="current_password"
+              rules={passwordRules()}
+              render={({ field }) => (
+                <FormItem>
+                  <FormControl>
+                    <PasswordInput
+                      icon={<FiLock className="h-4 w-4" />}
+                      placeholder="Current Password"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
-            <PasswordInput
-              type="new_password"
-              startElement={<FiLock />}
-              {...register("new_password", passwordRules())}
-              placeholder="New Password"
-              errors={errors}
+
+            <FormField
+              control={form.control}
+              name="new_password"
+              rules={passwordRules()}
+              render={({ field }) => (
+                <FormItem>
+                  <FormControl>
+                    <PasswordInput
+                      icon={<FiLock className="h-4 w-4" />}
+                      placeholder="New Password"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
-            <PasswordInput
-              type="confirm_password"
-              startElement={<FiLock />}
-              {...register("confirm_password", confirmPasswordRules(getValues))}
-              placeholder="Confirm Password"
-              errors={errors}
+
+            <FormField
+              control={form.control}
+              name="confirm_password"
+              rules={confirmPasswordRules(getValues)}
+              render={({ field }) => (
+                <FormItem>
+                  <FormControl>
+                    <PasswordInput
+                      icon={<FiLock className="h-4 w-4" />}
+                      placeholder="Confirm Password"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
-          </VStack>
+          </div>
           <Button
-            variant="solid"
-            mt={4}
             type="submit"
-            loading={isSubmitting}
-            disabled={!isValid}
+            disabled={!isValid || isSubmitting}
+            className="w-full"
           >
-            Save
+            {isSubmitting ? "Saving..." : "Save"}
           </Button>
-        </Box>
-      </Container>
-    </>
+        </form>
+      </Form>
+    </div>
   )
 }
+
 export default ChangePassword

@@ -1,12 +1,5 @@
-import {
-  Box,
-  Button,
-  Container,
-  Flex,
-  Heading,
-  Input,
-  Text,
-} from "@chakra-ui/react"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { useState } from "react"
 import { type SubmitHandler, useForm } from "react-hook-form"
@@ -17,10 +10,11 @@ import {
   type UserUpdateMe,
   UsersService,
 } from "@/client"
+import { Field } from "@/components/ui/field"
 import useAuth from "@/hooks/useAuth"
 import useCustomToast from "@/hooks/useCustomToast"
+import { cn } from "@/lib/utils"
 import { emailPattern, handleError } from "@/utils"
-import { Field } from "../ui/field"
 
 const UserInformation = () => {
   const queryClient = useQueryClient()
@@ -33,7 +27,7 @@ const UserInformation = () => {
     reset,
     getValues,
     formState: { isSubmitting, errors, isDirty },
-  } = useForm<UserPublic>({
+  } = useForm<UserUpdateMe>({
     mode: "onBlur",
     criteriaMode: "all",
     defaultValues: {
@@ -70,82 +64,73 @@ const UserInformation = () => {
   }
 
   return (
-    <>
-      <Container maxW="full">
-        <Heading size="sm" py={4}>
-          User Information
-        </Heading>
-        <Box
-          w={{ sm: "full", md: "50%" }}
-          as="form"
-          onSubmit={handleSubmit(onSubmit)}
-        >
-          <Field label="Full name">
-            {editMode ? (
-              <Input
-                {...register("full_name", { maxLength: 30 })}
-                type="text"
-                size="md"
-                w="auto"
-              />
-            ) : (
-              <Text
-                fontSize="md"
-                py={2}
-                color={!currentUser?.full_name ? "gray" : "inherit"}
-                truncate
-                maxWidth="250px"
-              >
-                {currentUser?.full_name || "N/A"}
-              </Text>
-            )}
-          </Field>
-          <Field
-            mt={4}
-            label="Email"
-            invalid={!!errors.email}
-            errorText={errors.email?.message}
-          >
-            {editMode ? (
-              <Input
-                {...register("email", {
-                  required: "Email is required",
-                  pattern: emailPattern,
-                })}
-                type="email"
-                size="md"
-                w="auto"
-              />
-            ) : (
-              <Text fontSize="md" py={2} truncate maxWidth="250px">
-                {currentUser?.email}
-              </Text>
-            )}
-          </Field>
-          <Flex mt={4} gap={3}>
-            <Button
-              variant="solid"
-              onClick={toggleEditMode}
-              type={editMode ? "button" : "submit"}
-              loading={editMode ? isSubmitting : false}
-              disabled={editMode ? !isDirty || !getValues("email") : false}
+    <div className="container mx-auto px-4">
+      <h1 className="text-2xl font-bold mb-4">User Information</h1>
+      <form className="w-full md:w-1/2" onSubmit={handleSubmit(onSubmit)}>
+        <Field label="Full name">
+          {editMode ? (
+            <Input
+              {...register("full_name", { maxLength: 30 })}
+              type="text"
+              className="w-auto"
+            />
+          ) : (
+            <p
+              className={cn(
+                "text-md truncate max-w-[250px]",
+                errors.full_name ? "text-destructive" : "",
+              )}
             >
-              {editMode ? "Save" : "Edit"}
+              {currentUser?.full_name || "N/A"}
+            </p>
+          )}
+        </Field>
+        <Field
+          label="Email"
+          invalid={!!errors.email}
+          errorText={errors.email?.message}
+        >
+          {editMode ? (
+            <Input
+              {...register("email", {
+                required: "Email is required",
+                pattern: emailPattern,
+              })}
+              type="email"
+              className="w-auto"
+            />
+          ) : (
+            <p
+              className={cn(
+                "text-md truncate max-w-[250px]",
+                errors.email ? "text-destructive" : "",
+              )}
+            >
+              {currentUser?.email}
+            </p>
+          )}
+        </Field>
+        <div className="flex gap-3 mt-4">
+          <Button
+            onClick={toggleEditMode}
+            type={editMode ? "button" : "submit"}
+            disabled={editMode ? !isDirty || !getValues("email") : false}
+          >
+            {editMode ? "Save" : "Edit"}
+          </Button>
+          {editMode && (
+            <Button
+              type="button"
+              variant="secondary"
+              onClick={onCancel}
+              disabled={isSubmitting}
+            >
+              Cancel
             </Button>
-            {editMode && (
-              <Button
-                variant="subtle"
-                colorPalette="gray"
-                onClick={onCancel}
-                disabled={isSubmitting}
-              >
-                Cancel
-              </Button>
-            )}
-          </Flex>
-        </Box>
-      </Container>
-    </>
+          )}
+        </div>
+      </form>
+    </div>
   )
 }
 

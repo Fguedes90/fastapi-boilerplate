@@ -1,4 +1,4 @@
-import { Container, Image, Input, Text } from "@chakra-ui/react"
+import { Input } from "@shadcn/ui"
 import {
   Link as RouterLink,
   createFileRoute,
@@ -56,13 +56,12 @@ function Login() {
 
   return (
     <>
-      <Container
+      <div
+        className="container mx-auto px-4"
         as="form"
         onSubmit={handleSubmit(onSubmit)}
         h="100vh"
         maxW="sm"
-        alignItems="stretch"
-        justifyContent="center"
         gap={4}
         centerContent
       >
@@ -72,7 +71,6 @@ function Login() {
           height="auto"
           maxW="2xs"
           alignSelf="center"
-          mb={4}
         />
         <Field
           invalid={!!errors.username}
@@ -100,16 +98,16 @@ function Login() {
         <RouterLink to="/recover-password" className="main-link">
           Forgot Password?
         </RouterLink>
-        <Button variant="solid" type="submit" loading={isSubmitting} size="md">
+        <Button type="submit" loading={isSubmitting}>
           Log In
         </Button>
-        <Text>
+        <p>
           Don't have an account?{" "}
           <RouterLink to="/signup" className="main-link">
             Sign Up
           </RouterLink>
-        </Text>
-      </Container>
+        </p>
+      </div>
     </>
   )
 }
