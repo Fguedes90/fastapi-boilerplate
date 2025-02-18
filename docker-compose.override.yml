@@ -126,6 +126,7 @@ services:
       - ./frontend/test-results:/app/test-results
     ports:
       - 9323:9323
+    command: npx playwright test
 
 networks:
   traefik-public:
