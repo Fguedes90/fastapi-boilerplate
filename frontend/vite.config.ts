@@ -8,12 +8,12 @@ export default defineConfig({
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
-      "client": path.resolve(__dirname, "./src/client"),
-      "components": path.resolve(__dirname, "./src/components"),
-      "hooks": path.resolve(__dirname, "./src/hooks"),
-      "lib": path.resolve(__dirname, "./src/lib"),
-      "routes": path.resolve(__dirname, "./src/routes"),
-      "theme": path.resolve(__dirname, "./src/theme")
+      client: path.resolve(__dirname, "./src/client"),
+      components: path.resolve(__dirname, "./src/components"),
+      hooks: path.resolve(__dirname, "./src/hooks"),
+      lib: path.resolve(__dirname, "./src/lib"),
+      routes: path.resolve(__dirname, "./src/routes"),
+      theme: path.resolve(__dirname, "./src/theme"),
     },
   },
   plugins: [react(), TanStackRouterVite()],

@@ -111,8 +111,8 @@ function Login() {
         >
           Forgot Password?
         </RouterLink>
-        <Button 
-          type="submit" 
+        <Button
+          type="submit"
           disabled={form.formState.isSubmitting}
           className="w-full"
         >

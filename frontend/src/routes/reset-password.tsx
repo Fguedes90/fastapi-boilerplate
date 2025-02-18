@@ -5,10 +5,7 @@ import { FiLock } from "react-icons/fi"
 
 import { type ApiError, LoginService, type NewPassword } from "@/client"
 import { Button } from "@/components/ui/button"
-import {
-  Form,
-  FormField,
-} from "@/components/ui/form"
+import { Form, FormField } from "@/components/ui/form"
 import { PasswordInput } from "@/components/ui/password-input"
 import { isLoggedIn } from "@/hooks/useAuth"
 import useCustomToast from "@/hooks/useCustomToast"
@@ -72,7 +69,7 @@ function ResetPassword() {
         Please enter your new password and confirm it to reset your password.
       </p>
       <Form {...form}>
-        <form 
+        <form
           onSubmit={form.handleSubmit(onSubmit)}
           className="w-full space-y-4"
         >
@@ -100,8 +97,8 @@ function ResetPassword() {
               />
             )}
           />
-          <Button 
-            type="submit" 
+          <Button
+            type="submit"
             className="w-full"
             disabled={form.formState.isSubmitting}
           >

@@ -151,8 +151,8 @@ function SignUp() {
             )}
           />
 
-          <Button 
-            type="submit" 
+          <Button
+            type="submit"
             disabled={form.formState.isSubmitting}
             className="w-full"
           >
