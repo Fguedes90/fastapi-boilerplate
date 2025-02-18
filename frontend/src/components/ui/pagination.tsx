@@ -1,146 +1,121 @@
+import { Button, type ButtonProps } from "@/components/ui/button"
+import { cn } from "@/lib/utils"
 import { ChevronLeft, ChevronRight, MoreHorizontal } from "lucide-react"
 import * as React from "react"
-import { cn } from "../../lib/utils"
-import { Button } from "./button"
 
-export interface PaginationRootProps {
-  count: number
-  pageSize: number
-  onPageChange: (params: { page: number }) => void
-  className?: string
-  children: React.ReactNode
-}
-
-export interface PaginationProps {
-  currentPage: number
-  totalPages: number
-  onPageChange: (page: number) => void
-  className?: string
-  siblingCount?: number
-}
-
-const range = (start: number, end: number) => {
-  const length = end - start + 1
-  return Array.from({ length }, (_, index) => index + start)
-}
-
-export const PaginationRoot: React.FC<PaginationRootProps> = ({
-  count,
-  pageSize,
-  onPageChange,
-  children,
+const Pagination = ({
   className,
-}) => {
-  const totalPages = Math.ceil(count / pageSize)
-  const currentPage = Math.min(Math.ceil(count / pageSize), totalPages)
+  ...props
+}: React.ComponentProps<"nav"> & { className?: string }) => (
+  <nav
+    role="navigation"
+    aria-label="pagination"
+    className={cn("mx-auto flex w-full justify-center", className)}
+    {...props}
+  />
+)
+Pagination.displayName = "Pagination"
 
-  return (
-    <div className={cn("flex items-center justify-between", className)}>
-      {React.Children.map(children, (child) =>
-        child
-          ? React.cloneElement(child as React.ReactElement, {
-              currentPage,
-              totalPages,
-              onPageChange: (page: number) => onPageChange({ page }),
-            })
-          : null,
+const PaginationContent = React.forwardRef<
+  HTMLUListElement,
+  React.ComponentProps<"ul"> & { className?: string }
+>(({ className, ...props }, ref) => (
+  <ul
+    ref={ref}
+    className={cn("flex flex-row items-center gap-1", className)}
+    {...props}
+  />
+))
+PaginationContent.displayName = "PaginationContent"
+
+const PaginationItem = React.forwardRef<
+  HTMLLIElement,
+  React.ComponentProps<"li"> & { className?: string }
+>(({ className, ...props }, ref) => (
+  <li ref={ref} className={cn("", className)} {...props} />
+))
+PaginationItem.displayName = "PaginationItem"
+
+interface PaginationLinkProps
+  extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+  isActive?: boolean
+  disabled?: boolean
+  size?: ButtonProps["size"]
+}
+
+const PaginationLink = React.forwardRef<HTMLButtonElement, PaginationLinkProps>(
+  ({ className, isActive, disabled, size = "icon", ...props }, ref) => (
+    <Button
+      ref={ref}
+      aria-current={isActive ? "page" : undefined}
+      disabled={disabled}
+      type="button"
+      variant={isActive ? "outline" : "ghost"}
+      size={size}
+      className={cn(
+        "w-9",
+        disabled && "pointer-events-none opacity-50",
+        className,
       )}
-    </div>
-  )
-}
+      {...props}
+    />
+  ),
+)
+PaginationLink.displayName = "PaginationLink"
 
-export const PaginationItems: React.FC<
-  Partial<PaginationProps> & { className?: string }
-> = ({
-  currentPage = 1,
-  totalPages = 1,
-  onPageChange,
+const PaginationPrevious = ({
   className,
-  siblingCount = 1,
-}) => {
-  const generatePaginationItems = () => {
-    const totalPageNumbers = siblingCount * 2 + 5
+  ...props
+}: React.ComponentProps<typeof PaginationLink>) => (
+  <PaginationLink
+    aria-label="Go to previous page"
+    size="default"
+    className={cn("gap-1 pl-2.5", className)}
+    {...props}
+  >
+    <ChevronLeft className="h-4 w-4" />
+    <span>Previous</span>
+  </PaginationLink>
+)
+PaginationPrevious.displayName = "PaginationPrevious"
 
-    if (totalPageNumbers >= totalPages) {
-      return range(1, totalPages)
-    }
+const PaginationNext = ({
+  className,
+  ...props
+}: React.ComponentProps<typeof PaginationLink>) => (
+  <PaginationLink
+    aria-label="Go to next page"
+    size="default"
+    className={cn("gap-1 pr-2.5", className)}
+    {...props}
+  >
+    <span>Next</span>
+    <ChevronRight className="h-4 w-4" />
+  </PaginationLink>
+)
+PaginationNext.displayName = "PaginationNext"
 
-    const leftSiblingIndex = Math.max(currentPage - siblingCount, 1)
-    const rightSiblingIndex = Math.min(currentPage + siblingCount, totalPages)
+const PaginationEllipsis = ({
+  className,
+  ...props
+}: React.ComponentProps<"span">) => (
+  <span
+    aria-hidden
+    className={cn("flex h-9 w-9 items-center justify-center", className)}
+    {...props}
+  >
+    <MoreHorizontal className="h-4 w-4" />
+    <span className="sr-only">More pages</span>
+  </span>
+)
+PaginationEllipsis.displayName = "PaginationEllipsis"
 
-    const shouldShowLeftDots = leftSiblingIndex > 2
-    const shouldShowRightDots = rightSiblingIndex < totalPages - 1
-
-    const firstPageIndex = 1
-    const lastPageIndex = totalPages
-
-    if (!shouldShowLeftDots && shouldShowRightDots) {
-      const leftItemCount = 3 + 2 * siblingCount
-      const leftRange = range(1, leftItemCount)
-      return [...leftRange, "dots", totalPages]
-    }
-
-    if (shouldShowLeftDots && !shouldShowRightDots) {
-      const rightItemCount = 3 + 2 * siblingCount
-      const rightRange = range(totalPages - rightItemCount + 1, totalPages)
-      return [firstPageIndex, "dots", ...rightRange]
-    }
-
-    const middleRange = range(leftSiblingIndex, rightSiblingIndex)
-    return [firstPageIndex, "dots", ...middleRange, "dots", lastPageIndex]
-  }
-
-  const paginationItems = generatePaginationItems()
-
-  return (
-    <div className={cn("flex items-center space-x-2", className)}>
-      {paginationItems.map((item, index) => {
-        if (item === "dots") {
-          return (
-            <div key={`dots-${index}`} className="flex items-center">
-              <MoreHorizontal className="h-4 w-4" />
-            </div>
-          )
-        }
-
-        return (
-          <Button
-            key={item}
-            variant={currentPage === item ? "default" : "outline"}
-            onClick={() => onPageChange?.(item as number)}
-          >
-            {item}
-          </Button>
-        )
-      })}
-    </div>
-  )
-}
-
-export const PaginationPrevTrigger: React.FC<
-  Partial<PaginationProps> & { className?: string }
-> = ({ currentPage = 1, onPageChange, className }) => {
-  return (
-    <Button
-      className={className}
-      onClick={() => onPageChange?.(Math.max(1, currentPage - 1))}
-      disabled={currentPage === 1}
-    >
-      <ChevronLeft className="h-4 w-4" />
-    </Button>
-  )
-}
-
-export const PaginationNextTrigger: React.FC<
-  Partial<PaginationProps> & { className?: string }
-> = ({ currentPage = 1, totalPages = 1, onPageChange, className }) => {
-  return (
-    <Button
-      className={className}
-      onClick={() => onPageChange?.(Math.min(totalPages, currentPage + 1))}
-      disabled={currentPage === totalPages}
-    >
-      <ChevronRight className="h-4 w-4" />
-    </Button>
-  )
+export {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
 }

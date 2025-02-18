@@ -5,6 +5,10 @@ import { FiLock } from "react-icons/fi"
 
 import { type ApiError, LoginService, type NewPassword } from "@/client"
 import { Button } from "@/components/ui/button"
+import {
+  Form,
+  FormField,
+} from "@/components/ui/form"
 import { PasswordInput } from "@/components/ui/password-input"
 import { isLoggedIn } from "@/hooks/useAuth"
 import useCustomToast from "@/hooks/useCustomToast"
@@ -26,17 +30,12 @@ export const Route = createFileRoute("/reset-password")({
 })
 
 function ResetPassword() {
-  const {
-    register,
-    handleSubmit,
-    getValues,
-    reset,
-    formState: { errors },
-  } = useForm<NewPasswordForm>({
+  const form = useForm<NewPasswordForm>({
     mode: "onBlur",
     criteriaMode: "all",
     defaultValues: {
       new_password: "",
+      confirm_password: "",
     },
   })
   const { showSuccessToast } = useCustomToast()
@@ -54,7 +53,7 @@ function ResetPassword() {
     mutationFn: resetPassword,
     onSuccess: () => {
       showSuccessToast("Password updated successfully.")
-      reset()
+      form.reset()
       navigate({ to: "/login" })
     },
     onError: (err: ApiError) => {
@@ -67,32 +66,50 @@ function ResetPassword() {
   }
 
   return (
-    <form
-      className="container mx-auto px-4 max-w-sm flex flex-col gap-4 justify-center items-center min-h-screen"
-      onSubmit={handleSubmit(onSubmit)}
-    >
+    <div className="container mx-auto px-4 max-w-sm flex flex-col gap-4 justify-center items-center min-h-screen">
       <h1 className="text-2xl font-bold mb-4">Reset Password</h1>
       <p className="text-center mb-4">
         Please enter your new password and confirm it to reset your password.
       </p>
-      <PasswordInput
-        startElement={<FiLock />}
-        type="new_password"
-        errors={errors}
-        {...register("new_password", passwordRules())}
-        placeholder="New Password"
-      />
-      <PasswordInput
-        startElement={<FiLock />}
-        type="confirm_password"
-        errors={errors}
-        {...register("confirm_password", confirmPasswordRules(getValues))}
-        placeholder="Confirm Password"
-      />
-      <Button type="submit" className="w-full">
-        Reset Password
-      </Button>
-    </form>
+      <Form {...form}>
+        <form 
+          onSubmit={form.handleSubmit(onSubmit)}
+          className="w-full space-y-4"
+        >
+          <FormField
+            control={form.control}
+            name="new_password"
+            rules={passwordRules()}
+            render={({ field }) => (
+              <PasswordInput
+                icon={<FiLock />}
+                placeholder="New Password"
+                {...field}
+              />
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="confirm_password"
+            rules={confirmPasswordRules(form.getValues)}
+            render={({ field }) => (
+              <PasswordInput
+                icon={<FiLock />}
+                placeholder="Confirm Password"
+                {...field}
+              />
+            )}
+          />
+          <Button 
+            type="submit" 
+            className="w-full"
+            disabled={form.formState.isSubmitting}
+          >
+            Reset Password
+          </Button>
+        </form>
+      </Form>
+    </div>
   )
 }
 

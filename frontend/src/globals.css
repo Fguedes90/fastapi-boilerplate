@@ -110,6 +110,15 @@
     @apply border-border;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground text-sm;
+  }
+  html {
+    font-size: 16px;
+  }
+}
+
+@layer components {
+  .main-link {
+    @apply text-primary font-bold hover:text-primary/80;
   }
 }

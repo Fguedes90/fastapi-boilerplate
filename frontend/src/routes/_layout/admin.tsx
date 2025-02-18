@@ -7,12 +7,12 @@ import AddUser from "@/components/Admin/AddUser"
 import { UserActionsMenu } from "@/components/Common/UserActionsMenu"
 import PendingUsers from "@/components/Pending/PendingUsers"
 import { Badge } from "@/components/ui/badge"
-import { Pagination } from "@/components/ui/pagination"
+import { PaginationNav } from "@/components/ui/pagination-nav"
 import {
   Table,
   TableBody,
   TableCell,
-  TableHead,
+  TableColumnHeader,
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
@@ -62,23 +62,20 @@ function UsersTable() {
 
   return (
     <div className="space-y-4">
-      <Table>
+      <Table.Root>
         <TableHeader>
           <TableRow>
-            <TableHead className="w-[20%]">Full name</TableHead>
-            <TableHead className="w-[25%]">Email</TableHead>
-            <TableHead className="w-[15%]">Role</TableHead>
-            <TableHead className="w-[20%]">Status</TableHead>
-            <TableHead className="w-[20%]">Actions</TableHead>
+            <TableColumnHeader w="20%">Full name</TableColumnHeader>
+            <TableColumnHeader w="25%">Email</TableColumnHeader>
+            <TableColumnHeader w="15%">Role</TableColumnHeader>
+            <TableColumnHeader w="20%">Status</TableColumnHeader>
+            <TableColumnHeader w="20%">Actions</TableColumnHeader>
           </TableRow>
         </TableHeader>
         <TableBody>
           {users?.map((user) => (
-            <TableRow
-              key={user.id}
-              className={isPlaceholderData ? "opacity-50" : ""}
-            >
-              <TableCell className="w-[20%]">
+            <TableRow key={user.id} opacity={isPlaceholderData ? 0.5 : 1}>
+              <TableCell truncate maxW="20%">
                 {user.full_name || "N/A"}
                 {currentUser?.id === user.id && (
                   <Badge variant="secondary" className="ml-2">
@@ -86,14 +83,16 @@ function UsersTable() {
                   </Badge>
                 )}
               </TableCell>
-              <TableCell className="w-[25%]">{user.email}</TableCell>
-              <TableCell className="w-[15%]">
+              <TableCell truncate maxW="25%">
+                {user.email}
+              </TableCell>
+              <TableCell truncate maxW="15%">
                 {user.is_superuser ? "Superuser" : "User"}
               </TableCell>
-              <TableCell className="w-[20%]">
+              <TableCell truncate maxW="20%">
                 {user.is_active ? "Active" : "Inactive"}
               </TableCell>
-              <TableCell className="w-[20%]">
+              <TableCell maxW="20%">
                 <UserActionsMenu
                   user={user}
                   disabled={currentUser?.id === user.id}
@@ -102,10 +101,10 @@ function UsersTable() {
             </TableRow>
           ))}
         </TableBody>
-      </Table>
+      </Table.Root>
       {totalPages > 1 && (
         <div className="flex justify-center">
-          <Pagination
+          <PaginationNav
             currentPage={page}
             totalPages={totalPages}
             onPageChange={setPage}

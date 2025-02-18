@@ -1,49 +1,30 @@
-import { Button } from "@shadcn/ui"
+import { Button } from "@/components/ui/button"
 import { Link } from "@tanstack/react-router"
 
 const NotFound = () => {
   return (
     <>
       <div
-        className="flex"
-        height="100vh"
-        align="center"
-        justify="center"
-        flexDir="column"
+        className="flex h-screen items-center justify-center flex-col p-4"
         data-testid="not-found"
-        p={4}
       >
-        <div className="flex" zIndex={1}>
-          <div
-            className="flex"
-            flexDir="column"
-            align="center"
-            justify="center"
-            p={4}
-          >
-            <p
-              fontSize={{ base: "6xl", md: "8xl" }}
-              fontWeight="bold"
-              lineHeight="1"
-            >
-              404
-            </p>
-            <p fontSize="2xl" fontWeight="bold">
-              Oops!
-            </p>
+        <div className="flex z-10">
+          <div className="flex flex-col items-center justify-center p-4">
+            <p className="text-6xl md:text-8xl font-bold leading-none">404</p>
+            <p className="text-2xl font-bold">Oops!</p>
           </div>
         </div>
 
-        <p fontSize="lg" zIndex={1}>
+        <p className="text-lg z-10">
           The page you are looking for was not found.
         </p>
-        <Center zIndex={1}>
+        <div className="flex justify-center z-10">
           <Link to="/">
-            <Button colorScheme="teal" alignSelf="center">
+            <Button variant="default" className="self-center">
               Go Back
             </Button>
           </Link>
-        </Center>
+        </div>
       </div>
     </>
   )

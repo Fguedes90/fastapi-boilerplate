@@ -93,7 +93,7 @@ const TableColumnHeader = React.forwardRef<
 ))
 TableColumnHeader.displayName = "Table.ColumnHeader"
 
-export const Table = {
+const Table = {
   Root: TableRoot,
   Header: TableHeader,
   Body: TableBody,
@@ -101,3 +101,5 @@ export const Table = {
   Cell: TableCell,
   ColumnHeader: TableColumnHeader,
 }
+
+export { Table, TableBody, TableCell, TableHeader, TableRow, TableColumnHeader }

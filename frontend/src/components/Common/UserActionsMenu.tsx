@@ -27,7 +27,7 @@ export const UserActionsMenu = ({ user, disabled }: UserActionsMenuProps) => {
       <DropdownMenuContent align="end" className="w-auto">
         <div className="flex flex-col">
           <EditUser user={user} />
-          <DeleteUser id={user.id} />
+          <DeleteUser userId={user.id} />
         </div>
       </DropdownMenuContent>
     </DropdownMenu>

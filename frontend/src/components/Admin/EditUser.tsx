@@ -16,7 +16,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
-import useCustomToast from "@/hooks/useCustomToast"
+import { useToast } from "@/hooks/use-toast"
 import { emailPattern, handleError } from "@/utils"
 import { Checkbox } from "../ui/checkbox"
 import { Field } from "../ui/field"
@@ -32,7 +32,7 @@ interface UserUpdateForm extends UserUpdate {
 const EditUser = ({ user }: EditUserProps) => {
   const [isOpen, setIsOpen] = useState(false)
   const queryClient = useQueryClient()
-  const { showSuccessToast } = useCustomToast()
+  const { toast } = useToast()
   const {
     control,
     register,
@@ -50,12 +50,20 @@ const EditUser = ({ user }: EditUserProps) => {
     mutationFn: (data: UserUpdateForm) =>
       UsersService.updateUser({ userId: user.id, requestBody: data }),
     onSuccess: () => {
-      showSuccessToast("User updated successfully.")
+      toast({
+        title: "Success",
+        description: "User updated successfully",
+      })
       reset()
       setIsOpen(false)
     },
     onError: (err: ApiError) => {
       handleError(err)
+      toast({
+        title: "Error",
+        description: "Failed to update user",
+        variant: "destructive",
+      })
     },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ["users"] })

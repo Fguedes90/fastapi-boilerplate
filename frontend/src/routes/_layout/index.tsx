@@ -11,9 +11,9 @@ function Dashboard() {
 
   return (
     <>
-      <div className="container mx-auto px-4" maxW="full">
-        <div m={4}>
-          <p fontSize="2xl">
+      <div className="container mx-auto px-4 w-full">
+        <div className="m-4">
+          <p className="text-2xl">
             Hi, {currentUser?.full_name || currentUser?.email} 👋🏼
           </p>
           <p>Welcome back, nice to see you again!</p>

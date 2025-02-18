@@ -8,12 +8,7 @@ import { ItemActionsMenu } from "@/components/Common/ItemActionsMenu"
 import AddItem from "@/components/Items/AddItem"
 import PendingItems from "@/components/Pending/PendingItems"
 import { EmptyState } from "@/components/ui/empty-state"
-import {
-  PaginationItems,
-  PaginationNextTrigger,
-  PaginationPrevTrigger,
-  PaginationRoot,
-} from "@/components/ui/pagination"
+import { PaginationNav } from "@/components/ui/pagination-nav"
 import { Table } from "@/components/ui/table"
 
 const itemsSearchSchema = z.object({
@@ -44,13 +39,14 @@ function ItemsTable() {
     placeholderData: (prevData) => prevData,
   })
 
-  const setPage = (page: number) =>
+  const setPage = (newPage: number) =>
     navigate({
-      search: () => ({ page }),
+      search: { page: newPage },
     })
 
   const items = data?.data.slice(0, PER_PAGE) ?? []
   const count = data?.count ?? 0
+  const totalPages = Math.ceil(count / PER_PAGE)
 
   if (isLoading) {
     return <PendingItems />
@@ -110,19 +106,15 @@ function ItemsTable() {
           ))}
         </Table.Body>
       </Table.Root>
-      <div className="flex justify-center mt-4">
-        <PaginationRoot
-          count={count}
-          pageSize={PER_PAGE}
-          onPageChange={({ page }) => setPage(page)}
-        >
-          <div className="flex items-center gap-2">
-            <PaginationPrevTrigger />
-            <PaginationItems />
-            <PaginationNextTrigger />
-          </div>
-        </PaginationRoot>
-      </div>
+      {totalPages > 1 && (
+        <div className="flex justify-center mt-4">
+          <PaginationNav
+            currentPage={page}
+            totalPages={totalPages}
+            onPageChange={setPage}
+          />
+        </div>
+      )}
     </>
   )
 }

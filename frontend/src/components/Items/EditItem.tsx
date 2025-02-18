@@ -4,7 +4,12 @@ import { useState } from "react"
 import { type SubmitHandler, useForm } from "react-hook-form"
 import { FaExchangeAlt } from "react-icons/fa"
 
-import { type ApiError, type ItemPublic, ItemsService } from "@/client"
+import {
+  type ApiError,
+  type ItemPublic,
+  type ItemUpdate,
+  ItemsService,
+} from "@/client"
 import {
   Dialog,
   DialogContent,
@@ -15,28 +20,23 @@ import {
 } from "@/components/ui/dialog"
 import { Field } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
-import useCustomToast from "@/hooks/useCustomToast"
+import { useToast } from "@/hooks/use-toast"
 import { handleError } from "@/utils"
 
 interface EditItemProps {
   item: ItemPublic
 }
 
-interface ItemUpdateForm {
-  title: string
-  description?: string
-}
-
 const EditItem = ({ item }: EditItemProps) => {
   const [isOpen, setIsOpen] = useState(false)
   const queryClient = useQueryClient()
-  const { showSuccessToast } = useCustomToast()
+  const { toast } = useToast()
   const {
     register,
     handleSubmit,
     reset,
     formState: { errors, isSubmitting },
-  } = useForm<ItemUpdateForm>({
+  } = useForm<ItemUpdate>({
     mode: "onBlur",
     criteriaMode: "all",
     defaultValues: {
@@ -46,22 +46,30 @@ const EditItem = ({ item }: EditItemProps) => {
   })
 
   const mutation = useMutation({
-    mutationFn: (data: ItemUpdateForm) =>
+    mutationFn: (data: ItemUpdate) =>
       ItemsService.updateItem({ id: item.id, requestBody: data }),
     onSuccess: () => {
-      showSuccessToast("Item updated successfully.")
+      toast({
+        title: "Success",
+        description: "Item updated successfully",
+      })
       reset()
       setIsOpen(false)
     },
     onError: (err: ApiError) => {
       handleError(err)
+      toast({
+        title: "Error",
+        description: "Failed to update item",
+        variant: "destructive",
+      })
     },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ["items"] })
     },
   })
 
-  const onSubmit: SubmitHandler<ItemUpdateForm> = async (data) => {
+  const onSubmit: SubmitHandler<ItemUpdate> = async (data) => {
     mutation.mutate(data)
   }
 

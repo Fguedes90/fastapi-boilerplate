@@ -17,18 +17,18 @@ import {
 } from "@/components/ui/dialog"
 import { Field } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
-import useCustomToast from "@/hooks/useCustomToast"
+import { useToast } from "@/hooks/use-toast"
 import { handleError } from "@/utils"
 
 const AddItem = () => {
   const [isOpen, setIsOpen] = useState(false)
   const queryClient = useQueryClient()
-  const { showSuccessToast } = useCustomToast()
+  const { toast } = useToast()
   const {
     register,
     handleSubmit,
     reset,
-    formState: { errors, isValid, isSubmitting },
+    formState: { errors, isValid },
   } = useForm<ItemCreate>({
     mode: "onBlur",
     criteriaMode: "all",
@@ -42,12 +42,20 @@ const AddItem = () => {
     mutationFn: (data: ItemCreate) =>
       ItemsService.createItem({ requestBody: data }),
     onSuccess: () => {
-      showSuccessToast("Item created successfully.")
+      toast({
+        title: "Success",
+        description: "Item created successfully",
+      })
       reset()
       setIsOpen(false)
     },
     onError: (err: ApiError) => {
       handleError(err)
+      toast({
+        title: "Error",
+        description: "Failed to create item",
+        variant: "destructive",
+      })
     },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ["items"] })

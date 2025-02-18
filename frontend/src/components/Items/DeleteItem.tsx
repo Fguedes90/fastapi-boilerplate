@@ -13,37 +13,40 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog"
-import useCustomToast from "@/hooks/useCustomToast"
+import { useToast } from "@/hooks/use-toast"
 
 const DeleteItem = ({ id }: { id: string }) => {
   const [isOpen, setIsOpen] = useState(false)
   const queryClient = useQueryClient()
-  const { showSuccessToast, showErrorToast } = useCustomToast()
+  const { toast } = useToast()
   const {
     handleSubmit,
     formState: { isSubmitting },
   } = useForm()
 
-  const deleteItem = async (id: string) => {
-    await ItemsService.deleteItem({ id: id })
-  }
-
   const mutation = useMutation({
-    mutationFn: deleteItem,
+    mutationFn: () => ItemsService.deleteItem({ id }),
     onSuccess: () => {
-      showSuccessToast("The item was deleted successfully")
+      toast({
+        title: "Success",
+        description: "Item deleted successfully",
+      })
       setIsOpen(false)
     },
     onError: () => {
-      showErrorToast("An error occurred while deleting the item")
+      toast({
+        title: "Error",
+        description: "Failed to delete item",
+        variant: "destructive",
+      })
     },
     onSettled: () => {
-      queryClient.invalidateQueries()
+      queryClient.invalidateQueries({ queryKey: ["items"] })
     },
   })
 
-  const onSubmit = async () => {
-    mutation.mutate(id)
+  const onSubmit = () => {
+    mutation.mutate()
   }
 
   return (

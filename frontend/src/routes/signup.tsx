@@ -1,4 +1,4 @@
-import { Input } from "@shadcn/ui"
+import { Input } from "@/components/ui/input"
 import {
   Link as RouterLink,
   createFileRoute,
@@ -9,8 +9,14 @@ import { FiLock, FiUser } from "react-icons/fi"
 
 import type { UserRegister } from "@/client"
 import { Button } from "@/components/ui/button"
-import { Field } from "@/components/ui/field"
-import { InputGroup } from "@/components/ui/input-group"
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormMessage,
+} from "@/components/ui/form"
+import { InputGroup, InputGroupAddon } from "@/components/ui/input-group"
 import { PasswordInput } from "@/components/ui/password-input"
 import useAuth, { isLoggedIn } from "@/hooks/useAuth"
 import { confirmPasswordRules, emailPattern, passwordRules } from "@/utils"
@@ -33,12 +39,7 @@ interface UserRegisterForm extends UserRegister {
 
 function SignUp() {
   const { signUpMutation } = useAuth()
-  const {
-    register,
-    handleSubmit,
-    getValues,
-    formState: { errors, isSubmitting },
-  } = useForm<UserRegisterForm>({
+  const form = useForm<UserRegisterForm>({
     mode: "onBlur",
     criteriaMode: "all",
     defaultValues: {
@@ -54,85 +55,121 @@ function SignUp() {
   }
 
   return (
-    <>
-      <div
-        className="flex"
-        flexDir={{ base: "column", md: "row" }}
-        justify="center"
-        h="100vh"
-      >
-        <div
-          className="container mx-auto px-4"
-          as="form"
-          onSubmit={handleSubmit(onSubmit)}
-          h="100vh"
-          maxW="sm"
-          gap={4}
-          centerContent
+    <div className="flex flex-col md:flex-row justify-center h-screen">
+      <Form {...form}>
+        <form
+          className="container mx-auto px-4 h-screen max-w-sm flex flex-col items-center justify-center gap-4"
+          onSubmit={form.handleSubmit(onSubmit)}
         >
-          <Image
+          <img
             src={Logo}
             alt="FastAPI logo"
-            height="auto"
-            maxW="2xs"
-            alignSelf="center"
+            className="h-auto max-w-[16rem] self-center"
           />
-          <Field
-            invalid={!!errors.full_name}
-            errorText={errors.full_name?.message}
-          >
-            <InputGroup w="100%" startElement={<FiUser />}>
-              <Input
-                id="full_name"
-                minLength={3}
-                {...register("full_name", {
-                  required: "Full Name is required",
-                })}
-                placeholder="Full Name"
-                type="text"
-              />
-            </InputGroup>
-          </Field>
+          <FormField
+            control={form.control}
+            name="full_name"
+            rules={{
+              required: "Full Name is required",
+              minLength: {
+                value: 3,
+                message: "Full Name must be at least 3 characters",
+              },
+            }}
+            render={({ field: { value, ...fieldProps } }) => (
+              <FormItem>
+                <FormControl>
+                  <InputGroup>
+                    <InputGroupAddon>
+                      <FiUser />
+                    </InputGroupAddon>
+                    <Input
+                      placeholder="Full Name"
+                      type="text"
+                      className="border-0 focus-visible:ring-0 focus-visible:ring-offset-0"
+                      value={value ?? ""}
+                      {...fieldProps}
+                    />
+                  </InputGroup>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
-          <Field invalid={!!errors.email} errorText={errors.email?.message}>
-            <InputGroup w="100%" startElement={<FiUser />}>
-              <Input
-                id="email"
-                {...register("email", {
-                  required: "Email is required",
-                  pattern: emailPattern,
-                })}
-                placeholder="Email"
-                type="email"
+          <FormField
+            control={form.control}
+            name="email"
+            rules={{
+              required: "Email is required",
+              pattern: emailPattern,
+            }}
+            render={({ field: { value, ...fieldProps } }) => (
+              <FormItem>
+                <FormControl>
+                  <InputGroup>
+                    <InputGroupAddon>
+                      <FiUser />
+                    </InputGroupAddon>
+                    <Input
+                      placeholder="Email"
+                      type="email"
+                      className="border-0 focus-visible:ring-0 focus-visible:ring-offset-0"
+                      value={value ?? ""}
+                      {...fieldProps}
+                    />
+                  </InputGroup>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="password"
+            rules={passwordRules()}
+            render={({ field }) => (
+              <PasswordInput
+                icon={<FiLock />}
+                placeholder="Password"
+                {...field}
               />
-            </InputGroup>
-          </Field>
-          <PasswordInput
-            type="password"
-            startElement={<FiLock />}
-            {...register("password", passwordRules())}
-            placeholder="Password"
-            errors={errors}
+            )}
           />
-          <PasswordInput
-            type="confirm_password"
-            startElement={<FiLock />}
-            {...register("confirm_password", confirmPasswordRules(getValues))}
-            placeholder="Confirm Password"
-            errors={errors}
+
+          <FormField
+            control={form.control}
+            name="confirm_password"
+            rules={confirmPasswordRules(form.getValues)}
+            render={({ field }) => (
+              <PasswordInput
+                icon={<FiLock />}
+                placeholder="Confirm Password"
+                {...field}
+              />
+            )}
           />
-          <Button type="submit" loading={isSubmitting}>
+
+          <Button 
+            type="submit" 
+            disabled={form.formState.isSubmitting}
+            className="w-full"
+          >
             Sign Up
           </Button>
           <p>
             Already have an account?{" "}
-            <RouterLink to="/login" className="main-link">
+            <RouterLink
+              to="/login"
+              className="text-primary hover:text-primary/80"
+            >
               Log In
             </RouterLink>
           </p>
-        </div>
-      </div>
-    </>
+        </form>
+      </Form>
+    </div>
   )
 }
 

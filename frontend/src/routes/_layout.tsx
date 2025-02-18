@@ -17,17 +17,11 @@ export const Route = createFileRoute("/_layout")({
 
 function Layout() {
   return (
-    <div className="flex" direction="column" h="100vh">
+    <div className="flex flex-col h-screen">
       <Navbar />
-      <div className="flex" flex="1" overflow="hidden">
+      <div className="flex flex-1 overflow-hidden">
         <Sidebar />
-        <div
-          className="flex"
-          flex="1"
-          direction="column"
-          p={4}
-          overflowY="auto"
-        >
+        <div className="flex flex-1 flex-col p-4 overflow-y-auto">
           <Outlet />
         </div>
       </div>

@@ -1,4 +1,4 @@
-import { Input } from "@shadcn/ui"
+import { Input } from "@/components/ui/input"
 import {
   Link as RouterLink,
   createFileRoute,
@@ -9,8 +9,14 @@ import { FiLock, FiMail } from "react-icons/fi"
 
 import type { Body_login_login_access_token as AccessToken } from "@/client"
 import { Button } from "@/components/ui/button"
-import { Field } from "@/components/ui/field"
-import { InputGroup } from "@/components/ui/input-group"
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormMessage,
+} from "@/components/ui/form"
+import { InputGroup, InputGroupAddon } from "@/components/ui/input-group"
 import { PasswordInput } from "@/components/ui/password-input"
 import useAuth, { isLoggedIn } from "@/hooks/useAuth"
 import Logo from "/assets/images/fastapi-logo.svg"
@@ -29,11 +35,7 @@ export const Route = createFileRoute("/login")({
 
 function Login() {
   const { loginMutation, error, resetError } = useAuth()
-  const {
-    register,
-    handleSubmit,
-    formState: { errors, isSubmitting },
-  } = useForm<AccessToken>({
+  const form = useForm<AccessToken>({
     mode: "onBlur",
     criteriaMode: "all",
     defaultValues: {
@@ -43,7 +45,7 @@ function Login() {
   })
 
   const onSubmit: SubmitHandler<AccessToken> = async (data) => {
-    if (isSubmitting) return
+    if (form.formState.isSubmitting) return
 
     resetError()
 
@@ -55,59 +57,77 @@ function Login() {
   }
 
   return (
-    <>
-      <div
-        className="container mx-auto px-4"
-        as="form"
-        onSubmit={handleSubmit(onSubmit)}
-        h="100vh"
-        maxW="sm"
-        gap={4}
-        centerContent
+    <Form {...form}>
+      <form
+        className="container mx-auto px-4 h-screen max-w-sm flex flex-col items-center justify-center gap-4"
+        onSubmit={form.handleSubmit(onSubmit)}
       >
-        <Image
+        <img
           src={Logo}
           alt="FastAPI logo"
-          height="auto"
-          maxW="2xs"
-          alignSelf="center"
+          className="h-auto max-w-[16rem] self-center"
         />
-        <Field
-          invalid={!!errors.username}
-          errorText={errors.username?.message || !!error}
-        >
-          <InputGroup w="100%" startElement={<FiMail />}>
-            <Input
-              id="username"
-              {...register("username", {
-                required: "Username is required",
-                pattern: emailPattern,
-              })}
-              placeholder="Email"
-              type="email"
+        <FormField
+          control={form.control}
+          name="username"
+          rules={{
+            required: "Username is required",
+            pattern: emailPattern,
+          }}
+          render={({ field }) => (
+            <FormItem>
+              <FormControl>
+                <InputGroup>
+                  <InputGroupAddon>
+                    <FiMail />
+                  </InputGroupAddon>
+                  <Input
+                    placeholder="Email"
+                    type="email"
+                    className="border-0 focus-visible:ring-0 focus-visible:ring-offset-0"
+                    {...field}
+                  />
+                </InputGroup>
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="password"
+          rules={passwordRules()}
+          render={({ field }) => (
+            <PasswordInput
+              icon={<FiLock />}
+              placeholder="Password"
+              {...field}
             />
-          </InputGroup>
-        </Field>
-        <PasswordInput
-          type="password"
-          startElement={<FiLock />}
-          {...register("password", passwordRules())}
-          placeholder="Password"
-          errors={errors}
+          )}
         />
-        <RouterLink to="/recover-password" className="main-link">
+        <RouterLink
+          to="/recover-password"
+          className="text-primary hover:text-primary/80 text-sm"
+        >
           Forgot Password?
         </RouterLink>
-        <Button type="submit" loading={isSubmitting}>
+        <Button 
+          type="submit" 
+          disabled={form.formState.isSubmitting}
+          className="w-full"
+        >
           Log In
         </Button>
         <p>
           Don't have an account?{" "}
-          <RouterLink to="/signup" className="main-link">
+          <RouterLink
+            to="/signup"
+            className="text-primary hover:text-primary/80"
+          >
             Sign Up
           </RouterLink>
         </p>
-      </div>
-    </>
+      </form>
+    </Form>
   )
 }

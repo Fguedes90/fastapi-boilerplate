@@ -1,21 +1,21 @@
 "use client"
 
-import { toaster } from "@/components/ui/toaster"
+import { useToast } from "@/hooks/use-toast"
 
 const useCustomToast = () => {
-  const showSuccessToast = (description: string) => {
-    toaster.create({
-      title: "Success!",
-      description,
-      type: "success",
+  const { toast } = useToast()
+
+  const showSuccessToast = (message: string) => {
+    toast({
+      title: message,
+      variant: "default",
     })
   }
 
-  const showErrorToast = (description: string) => {
-    toaster.create({
-      title: "Something went wrong!",
-      description,
-      type: "error",
+  const showErrorToast = (message: string) => {
+    toast({
+      title: message,
+      variant: "destructive",
     })
   }
 

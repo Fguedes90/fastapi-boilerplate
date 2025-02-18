@@ -1,19 +1,15 @@
-import React, { type PropsWithChildren } from "react"
-import "../../globals.css"
-import { system } from "../../theme"
-import { ColorModeProvider } from "./color-mode"
-import { ThemeProvider } from "./theme-provider"
+import { ThemeProvider as ThemeProviderBase } from "./theme-provider"
 import { Toaster } from "./toaster"
 
-export function CustomProvider(props: PropsWithChildren) {
+interface ProvidersProps {
+  children: React.ReactNode
+}
+
+export function Providers({ children }: ProvidersProps) {
   return (
-    <ThemeProvider defaultTheme="light">
-      <ChakraProvider value={system}>
-        <ColorModeProvider defaultTheme="light">
-          {props.children}
-        </ColorModeProvider>
-        <Toaster />
-      </ChakraProvider>
-    </ThemeProvider>
+    <ThemeProviderBase defaultTheme="system" storageKey="ui-theme">
+      {children}
+      <Toaster />
+    </ThemeProviderBase>
   )
 }

@@ -13,6 +13,7 @@ import {
   FormMessage,
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
+import { InputGroup, InputGroupAddon } from "@/components/ui/input-group"
 import { isLoggedIn } from "@/hooks/useAuth"
 import useCustomToast from "@/hooks/useCustomToast"
 import { emailPattern, handleError } from "@/utils"
@@ -33,7 +34,11 @@ export const Route = createFileRoute("/recover-password")({
 })
 
 function RecoverPassword() {
-  const form = useForm<FormData>()
+  const form = useForm<FormData>({
+    defaultValues: {
+      email: "",
+    },
+  })
   const { showSuccessToast } = useCustomToast()
 
   const mutation = useMutation({
@@ -66,22 +71,25 @@ function RecoverPassword() {
             <FormField
               control={form.control}
               name="email"
-              render={({ field }) => (
+              rules={{
+                required: "Email is required",
+                pattern: emailPattern,
+              }}
+              render={({ field: { value, ...fieldProps } }) => (
                 <FormItem>
                   <FormControl>
-                    <div className="relative">
-                      <FiMail className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground h-4 w-4" />
+                    <InputGroup>
+                      <InputGroupAddon>
+                        <FiMail className="h-4 w-4" />
+                      </InputGroupAddon>
                       <Input
                         placeholder="Email"
                         type="email"
-                        className="pl-10"
-                        {...field}
-                        {...form.register("email", {
-                          required: "Email is required",
-                          pattern: emailPattern,
-                        })}
+                        className="border-0 focus-visible:ring-0 focus-visible:ring-offset-0"
+                        value={value ?? ""}
+                        {...fieldProps}
                       />
-                    </div>
+                    </InputGroup>
                   </FormControl>
                   <FormMessage />
                 </FormItem>

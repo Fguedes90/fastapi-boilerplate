@@ -31,15 +31,8 @@ const SidebarItems = ({ onClose }: SidebarItemsProps) => {
 
   const listItems = finalItems.map(({ icon, title, path }) => (
     <RouterLink key={title} to={path} onClick={onClose}>
-      <div
-        className="flex"
-        gap={4}
-        _hover={{
-          background: "gray.subtle",
-        }}
-        fontSize="sm"
-      >
-        <Icon as={icon} alignSelf="center" />
+      <div className="flex items-center gap-4 text-sm rounded-md px-3 py-2 hover:bg-muted transition-colors">
+        {icon({ className: "h-4 w-4 self-center" })}
         <p>{title}</p>
       </div>
     </RouterLink>
@@ -47,7 +40,7 @@ const SidebarItems = ({ onClose }: SidebarItemsProps) => {
 
   return (
     <>
-      <p fontSize="xs" fontWeight="bold">
+      <p className="text-xs font-bold uppercase text-muted-foreground mb-2">
         Menu
       </p>
       <div>{listItems}</div>

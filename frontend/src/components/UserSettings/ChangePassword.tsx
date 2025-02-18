@@ -12,15 +12,15 @@ import {
   FormMessage,
 } from "@/components/ui/form"
 import { PasswordInput } from "@/components/ui/password-input"
-import useCustomToast from "@/hooks/useCustomToast"
+import { useToast } from "@/hooks/use-toast"
 import { confirmPasswordRules, handleError, passwordRules } from "@/utils"
 
-interface UpdatePasswordForm extends UpdatePassword {
+type UpdatePasswordForm = UpdatePassword & {
   confirm_password: string
 }
 
 const ChangePassword = () => {
-  const { showSuccessToast } = useCustomToast()
+  const { toast } = useToast()
   const form = useForm<UpdatePasswordForm>({
     mode: "onBlur",
     criteriaMode: "all",
@@ -37,16 +37,25 @@ const ChangePassword = () => {
     mutationFn: (data: UpdatePassword) =>
       UsersService.updatePasswordMe({ requestBody: data }),
     onSuccess: () => {
-      showSuccessToast("Password updated successfully.")
+      toast({
+        title: "Success",
+        description: "Password updated successfully",
+      })
       reset()
     },
     onError: (err: ApiError) => {
       handleError(err)
+      toast({
+        title: "Error",
+        description: "Failed to update password",
+        variant: "destructive",
+      })
     },
   })
 
   const onSubmit: SubmitHandler<UpdatePasswordForm> = async (data) => {
-    mutation.mutate(data)
+    const { confirm_password, ...updateData } = data
+    mutation.mutate(updateData)
   }
 
   return (
