@@ -83,6 +83,7 @@ function Login() {
                   </InputGroupAddon>
                   <Input
                     placeholder="Email"
+                    aria-label="Email"
                     type="email"
                     className="border-0 focus-visible:ring-0 focus-visible:ring-offset-0"
                     {...field}
@@ -101,6 +102,7 @@ function Login() {
             <PasswordInput
               icon={<FiLock />}
               placeholder="Password"
+              aria-label="Password"
               {...field}
             />
           )}
