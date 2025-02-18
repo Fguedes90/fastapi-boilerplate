@@ -1,4 +1,4 @@
-.PHONY: build build-push test test-local generate-client deploy up down logs
+.PHONY: build build-push test test-local generate-client deploy up down logs setup backend-install frontend-install precommit-install lint clean
 
 build:
 	@echo "Construindo as imagens..."
