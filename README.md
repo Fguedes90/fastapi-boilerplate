@@ -190,6 +190,33 @@ The project includes a Makefile with several useful commands to help you manage 
 #### Maintenance
 - `make clean` - Remove containers, volumes, and Python cache files
 
+## Observability Stack
+
+The project includes a comprehensive observability stack that can be managed separately:
+
+### Quick Start
+
+```bash
+# Start only the observability stack
+make obs-up
+
+# Stop the observability stack
+make obs-down
+
+# View observability services logs
+make obs-logs
+```
+
+### Access Points
+
+- Grafana: http://grafana.localhost (default credentials: admin/admin)
+- Included Dashboards:
+  - FastAPI Metrics: Application performance metrics
+  - Application Logs: Centralized logging
+  - Service Traces: Distributed tracing visualization
+
+For detailed information about the observability stack, see [development.md](./development.md).
+
 ## Backend Development
 
 Backend docs: [backend/README.md](./backend/README.md).

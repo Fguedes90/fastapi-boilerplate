@@ -68,6 +68,29 @@ cd backend
 fastapi dev app/main.py
 ```
 
+## Local Development with Observability
+
+For local development with the full observability stack:
+
+1. Start the observability services first:
+```bash
+docker-compose -f docker-compose.observability.yml up -d
+```
+
+2. Access the monitoring interfaces:
+   - Grafana: http://grafana.localhost
+   - Prometheus: http://localhost:9090
+   - Tempo UI (via Grafana): http://grafana.localhost/explore
+
+3. Default credentials:
+   - Grafana: admin/admin (configurable via GRAFANA_ADMIN_PASSWORD)
+
+The observability stack provides:
+- Metrics: FastAPI application metrics via Prometheus
+- Logging: Application logs aggregation via Loki
+- Tracing: Distributed tracing via Tempo
+- Visualization: All data visualized in Grafana dashboards
+
 ## Docker Compose in `localhost.tiangolo.com`
 
 When you start the Docker Compose stack, it uses `localhost` by default, with different ports for each service (backend, frontend, adminer, etc).

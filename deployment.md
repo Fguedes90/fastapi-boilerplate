@@ -1,3 +1,40 @@
+# FastAPI Project Deployment
+
+This guide explains how to deploy the FastAPI project to production.
+
+## Deployment Structure
+
+The project uses multiple docker-compose files for different aspects of the system:
+
+1. `docker-compose.yml` - Main application services (backend, frontend, database)
+2. `docker-compose.traefik.yml` - Traefik reverse proxy configuration
+3. `docker-compose.observability.yml` - Observability stack (Prometheus, Grafana, Loki, Tempo)
+
+## Deployment Order
+
+The services should be started in the following order:
+
+1. Create required networks:
+```bash
+docker network create traefik-public
+docker network create observability
+```
+
+2. Start Traefik:
+```bash
+docker-compose -f docker-compose.traefik.yml up -d
+```
+
+3. Start observability stack:
+```bash
+docker-compose -f docker-compose.observability.yml up -d
+```
+
+4. Start main application:
+```bash
+docker-compose up -d
+```
+
 # FastAPI Project - Deployment
 
 You can deploy the project using Docker Compose to a remote server.

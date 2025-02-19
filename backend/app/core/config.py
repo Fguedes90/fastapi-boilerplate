@@ -97,6 +97,13 @@ class Settings(BaseSettings):
     FIRST_SUPERUSER: str
     FIRST_SUPERUSER_PASSWORD: str
 
+    # Observability Settings
+    ENABLE_METRICS: bool = True
+    METRICS_PORT: int = 8000
+    OTLP_ENDPOINT: str = "http://tempo:4317"
+    SERVICE_NAME: str = "fastapi-app"
+    LOKI_HOST: str = "http://loki:3100"
+
     def _check_default_secret(self, var_name: str, value: str | None) -> None:
         if value == "changethis":
             message = (

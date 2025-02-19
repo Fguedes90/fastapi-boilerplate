@@ -81,12 +81,19 @@ services:
     networks:
       - traefik-public
       - default
+      - observability
     depends_on:
       db:
         condition: service_healthy
         restart: true
       prestart:
         condition: service_completed_successfully
+      prometheus:
+        condition: service_started
+      tempo:
+        condition: service_started
+      loki:
+        condition: service_started
     env_file:
       - .env
     environment:
@@ -106,7 +113,13 @@ services:
       - POSTGRES_DB=${POSTGRES_DB}
       - POSTGRES_USER=${POSTGRES_USER?Variable not set}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD?Variable not set}
-      - SENTRY_DSN=${SENTRY_DSN}
+      - ENABLE_METRICS=${ENABLE_METRICS}
+      - METRICS_PORT=${METRICS_PORT}
+      - OTLP_ENDPOINT=${OTLP_ENDPOINT}
+      - SERVICE_NAME=${SERVICE_NAME}
+      - LOKI_HOST=${LOKI_HOST}
+    ports:
+      - "${METRICS_PORT}:${METRICS_PORT}"  # Expose metrics port
 
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8000/api/v1/utils/health-check/"]
@@ -162,10 +175,12 @@ services:
 
       # Enable redirection for HTTP and HTTPS
       - traefik.http.routers.${STACK_NAME?Variable not set}-frontend-http.middlewares=https-redirect
+
 volumes:
   app-db-data:
 
 networks:
   traefik-public:
-    # Allow setting it to false for testing
+    external: true
+  observability:
     external: true
