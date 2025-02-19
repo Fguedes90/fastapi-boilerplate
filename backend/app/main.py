@@ -1,4 +1,3 @@
-import sentry_sdk
 from fastapi import FastAPI
 from fastapi.routing import APIRoute
 from starlette.middleware.cors import CORSMiddleware
@@ -13,7 +12,6 @@ from opentelemetry.sdk.resources import Resource
 from app.api.main import api_router
 from app.core.config import settings
 from app.middleware import PrometheusMiddleware
-from app.metrics import metrics
 
 from opentelemetry.instrumentation.logging import LoggingInstrumentor
 
@@ -39,8 +37,6 @@ def setup_observability():
 def custom_generate_unique_id(route: APIRoute) -> str:
     return f"{route.tags[0]}-{route.name}"
 
-if settings.SENTRY_DSN and settings.ENVIRONMENT != "local":
-    sentry_sdk.init(dsn=str(settings.SENTRY_DSN), enable_tracing=True)
 
 app = FastAPI(
     title=settings.PROJECT_NAME,
@@ -66,8 +62,5 @@ if settings.all_cors_origins:
 
 # Add Prometheus middleware
 app.add_middleware(PrometheusMiddleware, app_name=settings.SERVICE_NAME)
-
-# Expose /metrics endpoint for Prometheus scraping
-app.add_route("/metrics", metrics)
 
 app.include_router(api_router, prefix=settings.API_V1_STR)

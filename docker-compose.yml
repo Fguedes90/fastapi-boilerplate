@@ -88,12 +88,6 @@ services:
         restart: true
       prestart:
         condition: service_completed_successfully
-      prometheus:
-        condition: service_started
-      tempo:
-        condition: service_started
-      loki:
-        condition: service_started
     env_file:
       - .env
     environment:
