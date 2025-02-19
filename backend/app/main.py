@@ -15,6 +15,8 @@ from app.core.config import settings
 from app.middleware import PrometheusMiddleware
 from app.metrics import metrics
 
+from opentelemetry.instrumentation.logging import LoggingInstrumentor
+
 def setup_observability():
     if settings.ENABLE_METRICS:
         # Start Prometheus metrics server
@@ -30,6 +32,9 @@ def setup_observability():
 
     # Set the tracer provider
     trace.set_tracer_provider(tracer_provider)
+
+    # Instrument logging with OpenTelemetry
+    LoggingInstrumentor().instrument(set_logging_format=True)
 
 def custom_generate_unique_id(route: APIRoute) -> str:
     return f"{route.tags[0]}-{route.name}"
