@@ -35,22 +35,22 @@ class PrometheusMiddleware(BaseHTTPMiddleware):
 
     async def dispatch(self, request: Request, call_next: RequestResponseEndpoint) -> Response:
         method = request.method
-        path, is_handled_path = self._get_path(request)
-
-        if not is_handled_path:
-            return await call_next(request)
-
+        path, _ = self._get_path(request)  # Track metrics for all paths
+        
         return await self._handle_request(method, path, request, call_next)
 
     async def _handle_request(self, method: str, path: str, request: Request, call_next: RequestResponseEndpoint) -> Response:
         self._update_request_metrics(method, path)
         before_time = time.perf_counter()
+        status_code = 500  # Default status for unhandled exceptions
 
         try:
             response = await call_next(request)
             status_code = response.status_code
         except Exception as e:
             self._handle_exception(method, path, e)
+            if hasattr(e, "status_code"):  # Use exception status code if available
+                status_code = e.status_code
             raise
         else:
             self._record_request_duration(method, path, before_time)
