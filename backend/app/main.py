@@ -1,40 +1,24 @@
+import os
 from fastapi import FastAPI
 from fastapi.routing import APIRoute
 from starlette.middleware.cors import CORSMiddleware
-from opentelemetry import trace
-from opentelemetry.exporter.otlp.proto.grpc.trace_exporter import OTLPSpanExporter
-from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
-from opentelemetry.instrumentation.logging import LoggingInstrumentor
-from opentelemetry.sdk.trace import TracerProvider
-from opentelemetry.sdk.trace.export import BatchSpanProcessor
-from opentelemetry.sdk.resources import Resource
-from prometheus_client import REGISTRY, start_http_server
-
 from app.api.main import api_router
 from app.core.config import settings
-from app.middleware import PrometheusMiddleware
+import uvicorn
 
-def setup_observability(app: FastAPI):
-    # Configure OpenTelemetry
-    resource = Resource.create({"service.name": settings.SERVICE_NAME})
-    tracer_provider = TracerProvider(resource=resource)
+from .observability import PrometheusMiddleware, metrics, setting_otlp
 
-    # Configure OTLP exporter for Tempo
-    otlp_exporter = OTLPSpanExporter(endpoint=settings.OTLP_ENDPOINT, insecure=True)
-    tracer_provider.add_span_processor(BatchSpanProcessor(otlp_exporter))
+APP_NAME = os.environ.get("APP_NAME", "app")
+EXPOSE_PORT = os.environ.get("EXPOSE_PORT", 8000)
+OTLP_GRPC_ENDPOINT = os.environ.get("OTLP_GRPC_ENDPOINT", "http://tempo:4317")
 
-    # Set the tracer provider
-    trace.set_tracer_provider(tracer_provider)
-    
-    # Instrument logging with OpenTelemetry
-    LoggingInstrumentor().instrument(set_logging_format=True)
-    
-    # Instrument FastAPI with OpenTelemetry
-    FastAPIInstrumentor.instrument_app(app)
+TARGET_ONE_HOST = os.environ.get("TARGET_ONE_HOST", "app-b")
+TARGET_TWO_HOST = os.environ.get("TARGET_TWO_HOST", "app-c")
 
-    # Add Prometheus middleware and configure metrics
-    if settings.ENABLE_METRICS:
-        app.add_middleware(PrometheusMiddleware, app_name=settings.SERVICE_NAME)
+app = FastAPI()
+
+
+
 
 def custom_generate_unique_id(route: APIRoute) -> str:
     return f"{route.tags[0]}-{route.name}"
@@ -45,9 +29,14 @@ app = FastAPI(
     generate_unique_id_function=custom_generate_unique_id,
 )
 
-# Set up observability
-setup_observability(app)
 
+# Setting metrics middleware
+app.add_middleware(PrometheusMiddleware, app_name=APP_NAME)
+app.add_route("/metrics", metrics)
+setting_otlp(app, APP_NAME, OTLP_GRPC_ENDPOINT)
+
+
+# Setting OpenTelemetry exporter
 # Set all CORS enabled origins
 if settings.all_cors_origins:
     app.add_middleware(
@@ -59,3 +48,12 @@ if settings.all_cors_origins:
     )
 
 app.include_router(api_router, prefix=settings.API_V1_STR)
+
+
+if __name__ == "__main__":
+    # update uvicorn access logger format
+    log_config = uvicorn.config.LOGGING_CONFIG
+    log_config["formatters"]["access"][
+        "fmt"
+    ] = "%(asctime)s %(levelname)s [%(name)s] [%(filename)s:%(lineno)d] [trace_id=%(otelTraceID)s span_id=%(otelSpanID)s resource.service.name=%(otelServiceName)s] - %(message)s"
+    uvicorn.run(app, host="0.0.0.0", port=EXPOSE_PORT, log_config=log_config)
