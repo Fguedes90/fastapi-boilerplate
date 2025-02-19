@@ -61,6 +61,10 @@ precommit-install:
 setup: backend-install frontend-install precommit-install
 	@echo "Setup inicial concluído."
 
+loki-driver:
+        @echo "Instalando driver loki..."
+        docker plugin install grafana/loki-docker-driver:2.9.2 --alias loki --grant-all-permissions
+
 lint:
 	@echo "Executando lint (pre-commit)..."
 	pre-commit run --all-files

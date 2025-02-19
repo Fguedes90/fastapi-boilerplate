@@ -50,6 +50,8 @@ services:
       - observability
     environment:
       - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_ADMIN_PASSWORD:-admin}
+    ports:
+      - "3000:3000"
     labels:
       - traefik.enable=true
       - traefik.docker.network=traefik-public
