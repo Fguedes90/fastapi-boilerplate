@@ -7,7 +7,7 @@ from opentelemetry.exporter.otlp.proto.grpc.trace_exporter import \
 from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
 from opentelemetry.instrumentation.logging import LoggingInstrumentor
 from opentelemetry.sdk.resources import Resource
-from opentelemetry.sdk.trace import TracerProvider
+from opentelemetry.sdk.trace import TracerProvider, Status, StatusCode
 from opentelemetry.sdk.trace.export import BatchSpanProcessor
 from prometheus_client import REGISTRY, Counter, Gauge, Histogram
 from prometheus_client.openmetrics.exposition import (CONTENT_TYPE_LATEST,
@@ -19,6 +19,7 @@ from starlette.responses import Response
 from starlette.routing import Match
 from starlette.status import HTTP_500_INTERNAL_SERVER_ERROR
 from starlette.types import ASGIApp
+from app.core.config import settings
 
 INFO = Gauge(
     "fastapi_app_info", "FastAPI application information.", [
@@ -125,8 +126,8 @@ def setting_otlp(app: ASGIApp, app_name: str, endpoint: str, log_correlation: bo
     
     # Use no-op exporter for tests with synchronous processing
     if settings.ENVIRONMENT == "test":
-        # Disable stacktracing exportation in test mode by turning off tracing
-        trace.set_tracer_provider(None)
+        # Create a tracer provider that disables exception recording
+        trace.set_tracer_provider(TracerProvider(resource=resource, record_exception=False))
         return
     else:
         # Configure OTLP exporter with longer timeout and retry settings
