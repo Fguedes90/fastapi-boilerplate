@@ -1,25 +1,20 @@
 from fastapi import FastAPI
 from fastapi.routing import APIRoute
 from starlette.middleware.cors import CORSMiddleware
-from prometheus_client import start_http_server
 from opentelemetry import trace
 from opentelemetry.exporter.otlp.proto.grpc.trace_exporter import OTLPSpanExporter
 from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
+from opentelemetry.instrumentation.logging import LoggingInstrumentor
 from opentelemetry.sdk.trace import TracerProvider
 from opentelemetry.sdk.trace.export import BatchSpanProcessor
 from opentelemetry.sdk.resources import Resource
+from prometheus_client import REGISTRY, start_http_server
 
 from app.api.main import api_router
 from app.core.config import settings
 from app.middleware import PrometheusMiddleware
 
-from opentelemetry.instrumentation.logging import LoggingInstrumentor
-
-def setup_observability():
-    if settings.ENABLE_METRICS:
-        # Start Prometheus metrics server
-        start_http_server(settings.METRICS_PORT)
-
+def setup_observability(app: FastAPI):
     # Configure OpenTelemetry
     resource = Resource.create({"service.name": settings.SERVICE_NAME})
     tracer_provider = TracerProvider(resource=resource)
@@ -30,13 +25,19 @@ def setup_observability():
 
     # Set the tracer provider
     trace.set_tracer_provider(tracer_provider)
-
+    
     # Instrument logging with OpenTelemetry
     LoggingInstrumentor().instrument(set_logging_format=True)
+    
+    # Instrument FastAPI with OpenTelemetry
+    FastAPIInstrumentor.instrument_app(app)
+
+    # Add Prometheus middleware and configure metrics
+    if settings.ENABLE_METRICS:
+        app.add_middleware(PrometheusMiddleware, app_name=settings.SERVICE_NAME)
 
 def custom_generate_unique_id(route: APIRoute) -> str:
     return f"{route.tags[0]}-{route.name}"
-
 
 app = FastAPI(
     title=settings.PROJECT_NAME,
@@ -45,10 +46,7 @@ app = FastAPI(
 )
 
 # Set up observability
-setup_observability()
-
-# Instrument FastAPI with OpenTelemetry
-FastAPIInstrumentor.instrument_app(app)
+setup_observability(app)
 
 # Set all CORS enabled origins
 if settings.all_cors_origins:
@@ -59,8 +57,5 @@ if settings.all_cors_origins:
         allow_methods=["*"],
         allow_headers=["*"],
     )
-
-# Add Prometheus middleware
-app.add_middleware(PrometheusMiddleware, app_name=settings.SERVICE_NAME)
 
 app.include_router(api_router, prefix=settings.API_V1_STR)

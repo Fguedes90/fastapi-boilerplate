@@ -4,8 +4,12 @@ from starlette.responses import Response
 from starlette.requests import Request
 from fastapi import APIRouter
 
+router = APIRouter(tags=["metrics"])
 
-router = APIRouter(tags=["metrics"],prefix="/metrics")
-@router.get("/", include_in_schema=False)
-def metrics(request: Request):
-    return Response(generate_latest(REGISTRY), headers={"Content-Type": CONTENT_TYPE_LATEST})
+@router.get("/metrics", include_in_schema=False)
+async def metrics(request: Request) -> Response:
+    """Endpoint that serves Prometheus metrics"""
+    return Response(
+        generate_latest(REGISTRY),
+        media_type=CONTENT_TYPE_LATEST
+    )

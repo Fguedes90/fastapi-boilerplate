@@ -25,6 +25,7 @@ dependencies = [
     "opentelemetry-instrumentation-fastapi",
     "opentelemetry-exporter-otlp",
     "prometheus-client",
+    "opentelemetry-instrumentation-logging>=0.51b0",
 ]
 
 [tool.uv]
