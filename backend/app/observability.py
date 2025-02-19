@@ -122,15 +122,11 @@ def setting_otlp(app: ASGIApp, app_name: str, endpoint: str, log_correlation: bo
         "compose_service": app_name
     })
 
-    tracer = TracerProvider(resource=resource)
-    
-    # For testing environment: disable exporting stacktraces to Tempo by disabling exception recording
     if settings.ENVIRONMENT == "test":
-        # Create a tracer provider with record_exception set to False to prevent stacktraces from being exported
+        # Disable exporting stacktraces in testing by disabling exception recording
         tracer = TracerProvider(resource=resource, record_exception=False)
-        trace.set_tracer_provider(tracer)
-        return
     else:
+        tracer = TracerProvider(resource=resource)
         # Configure OTLP exporter with longer timeout and retry settings
         otlp_exporter = OTLPSpanExporter(
             endpoint=endpoint,
