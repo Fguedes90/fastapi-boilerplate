@@ -21,11 +21,11 @@ def setup_observability():
     # Configure OpenTelemetry
     resource = Resource.create({"service.name": settings.SERVICE_NAME})
     tracer_provider = TracerProvider(resource=resource)
-    
+
     # Configure OTLP exporter for Tempo
     otlp_exporter = OTLPSpanExporter(endpoint=settings.OTLP_ENDPOINT, insecure=True)
     tracer_provider.add_span_processor(BatchSpanProcessor(otlp_exporter))
-    
+
     # Set the tracer provider
     trace.set_tracer_provider(tracer_provider)
 
@@ -56,5 +56,11 @@ if settings.all_cors_origins:
         allow_methods=["*"],
         allow_headers=["*"],
     )
+
+# Add Prometheus middleware
+app.add_middleware(PrometheusMiddleware, app_name=settings.SERVICE_NAME)
+
+# Expose /metrics endpoint for Prometheus scraping
+app.add_route("/metrics", metrics)
 
 app.include_router(api_router, prefix=settings.API_V1_STR)
