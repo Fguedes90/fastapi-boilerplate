@@ -79,3 +79,7 @@ obs-down:
 
 obs-logs:
 	docker-compose -f docker-compose.observability.yml logs -f
+
+test-local:
+	@echo "Executando testes localmente..."
+	sh scripts/test-local.sh

@@ -8,7 +8,7 @@ dependencies = [
     "python-multipart<1.0.0,>=0.0.7",
     "email-validator<3.0.0.0,>=2.1.0.post1",
     "passlib[bcrypt]<2.0.0,>=1.7.4",
-    "tenacity<9.0.0,>=8.2.3",
+    "tenacity>=8.2.3,<9.0.0",
     "pydantic>2.0",
     "emails<1.0,>=0.6",
     "jinja2<4.0.0,>=3.1.4",
@@ -16,21 +16,22 @@ dependencies = [
     "httpx<1.0.0,>=0.25.1",
     "psycopg[binary]<4.0.0,>=3.1.13",
     "sqlmodel<1.0.0,>=0.0.21",
-    # Pin bcrypt until passlib supports the latest
     "bcrypt==4.0.1",
     "pydantic-settings<3.0.0,>=2.2.1",
     "pyjwt<3.0.0,>=2.8.0",
-    "opentelemetry-api",
-    "opentelemetry-sdk",
-    "opentelemetry-instrumentation-fastapi",
-    "opentelemetry-exporter-otlp",
-    "prometheus-client",
+    "opentelemetry-api>=1.24.0",
+    "opentelemetry-sdk>=1.24.0",
+    "opentelemetry-instrumentation-fastapi>=0.45b0",
+    "opentelemetry-exporter-otlp>=1.24.0",
     "opentelemetry-instrumentation-logging>=0.51b0",
+    "opentelemetry-util-http>=0.45b0",
+    "prometheus-client>=0.20.0",
 ]
 
 [tool.uv]
 dev-dependencies = [
-    "pytest<8.0.0,>=7.4.3",
+    "pytest<9.0.0,>=8.3.4",
+    "pytest-asyncio>=0.25.3",
     "mypy<2.0.0,>=1.8.0",
     "ruff<1.0.0,>=0.2.2",
     "pre-commit<4.0.0,>=3.6.2",
@@ -41,6 +42,16 @@ dev-dependencies = [
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
+
+[tool.pytest.ini_options]
+minversion = "8.0"
+addopts = "-ra -q"
+testpaths = ["app/tests"]
+asyncio_mode = "auto"
+filterwarnings = [
+    "ignore::DeprecationWarning",
+    "ignore::UserWarning",
+]
 
 [tool.mypy]
 strict = true
@@ -69,5 +80,4 @@ ignore = [
 ]
 
 [tool.ruff.lint.pyupgrade]
-# Preserve types, even if a file imports `from __future__ import annotations`.
 keep-runtime-typing = true

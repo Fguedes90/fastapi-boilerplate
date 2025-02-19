@@ -1,4 +1,3 @@
-
 import time
 from typing import Tuple
 
@@ -105,7 +104,7 @@ class PrometheusMiddleware(BaseHTTPMiddleware):
 
 
 def metrics(request: Request) -> Response:
-    return Response(generate_latest(REGISTRY), headers={"Content-Type": CONTENT_TYPE_LATEST})
+    return Response(generate_latest(REGISTRY), headers={"Content-Type": "text/plain; version=0.0.4; charset=utf-8"})
 
 
 def setting_otlp(app: ASGIApp, app_name: str, endpoint: str, log_correlation: bool = True) -> None:
