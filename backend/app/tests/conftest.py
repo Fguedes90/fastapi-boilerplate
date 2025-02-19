@@ -1,4 +1,5 @@
 from collections.abc import Generator
+import os
 
 import pytest
 from fastapi.testclient import TestClient
@@ -12,15 +13,18 @@ from app.tests.utils.user import authentication_token_from_email
 from app.tests.utils.utils import get_superuser_token_headers
 
 
+# Configure test environment
+os.environ["ENVIRONMENT"] = "test"
+os.environ["ENABLE_TRACING"] = "0"
+
+
 @pytest.fixture(scope="session", autouse=True)
 def db() -> Generator[Session, None, None]:
     with Session(engine) as session:
         init_db(session)
         yield session
-        statement = delete(Item)
-        session.execute(statement)
-        statement = delete(User)
-        session.execute(statement)
+        session.exec(delete(Item))
+        session.exec(delete(User))
         session.commit()
 
 

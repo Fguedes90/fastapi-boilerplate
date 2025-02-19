@@ -26,6 +26,8 @@ dependencies = [
     "opentelemetry-instrumentation-logging>=0.51b0",
     "opentelemetry-util-http>=0.45b0",
     "prometheus-client>=0.20.0",
+    "locust>=2.32.10",
+    "pytest-cov>=6.0.0",
 ]
 
 [tool.uv]
@@ -48,6 +50,7 @@ minversion = "8.0"
 addopts = "-ra -q"
 testpaths = ["app/tests"]
 asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"
 filterwarnings = [
     "ignore::DeprecationWarning",
     "ignore::UserWarning",

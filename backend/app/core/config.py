@@ -35,7 +35,7 @@ class Settings(BaseSettings):
     # 60 minutes * 24 hours * 8 days = 8 days
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24 * 8
     FRONTEND_HOST: str = "http://localhost:5173"
-    ENVIRONMENT: Literal["local", "staging", "production"] = "local"
+    ENVIRONMENT: Literal["local", "staging", "production", "test"] = "local"
 
     BACKEND_CORS_ORIGINS: Annotated[
         list[AnyUrl] | str, BeforeValidator(parse_cors)
@@ -99,10 +99,17 @@ class Settings(BaseSettings):
 
     # Observability Settings
     ENABLE_METRICS: bool = True
+    ENABLE_TRACING: bool = True
     METRICS_PORT: int = 8000
     OTLP_ENDPOINT: str = "http://tempo:4317"
     SERVICE_NAME: str = "fastapi-app"
     LOKI_HOST: str = "http://loki:3100"
+
+    @model_validator(mode='after')
+    def parse_enable_tracing(self) -> 'Settings':
+        if isinstance(self.ENABLE_TRACING, str):
+            self.ENABLE_TRACING = self.ENABLE_TRACING.lower() in ('1', 'true', 'yes')
+        return self
 
     def _check_default_secret(self, var_name: str, value: str | None) -> None:
         if value == "changethis":

@@ -8,17 +8,9 @@ import uvicorn
 
 from .observability import PrometheusMiddleware, metrics, setting_otlp
 
-APP_NAME = os.environ.get("APP_NAME", "app")
-EXPOSE_PORT = os.environ.get("EXPOSE_PORT", 8000)
-OTLP_GRPC_ENDPOINT = os.environ.get("OTLP_GRPC_ENDPOINT", "http://tempo:4317")
-
-TARGET_ONE_HOST = os.environ.get("TARGET_ONE_HOST", "app-b")
-TARGET_TWO_HOST = os.environ.get("TARGET_TWO_HOST", "app-c")
-
-app = FastAPI()
-
-
-
+APP_NAME = settings.SERVICE_NAME
+EXPOSE_PORT = settings.METRICS_PORT
+OTLP_GRPC_ENDPOINT = settings.OTLP_ENDPOINT
 
 def custom_generate_unique_id(route: APIRoute) -> str:
     return f"{route.tags[0]}-{route.name}"
@@ -29,14 +21,11 @@ app = FastAPI(
     generate_unique_id_function=custom_generate_unique_id,
 )
 
-
 # Setting metrics middleware
 app.add_middleware(PrometheusMiddleware, app_name=APP_NAME)
 app.add_route("/metrics", metrics)
 setting_otlp(app, APP_NAME, OTLP_GRPC_ENDPOINT)
 
-
-# Setting OpenTelemetry exporter
 # Set all CORS enabled origins
 if settings.all_cors_origins:
     app.add_middleware(
@@ -48,7 +37,6 @@ if settings.all_cors_origins:
     )
 
 app.include_router(api_router, prefix=settings.API_V1_STR)
-
 
 if __name__ == "__main__":
     # update uvicorn access logger format

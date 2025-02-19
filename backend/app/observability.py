@@ -108,19 +108,39 @@ def metrics(request: Request) -> Response:
 
 
 def setting_otlp(app: ASGIApp, app_name: str, endpoint: str, log_correlation: bool = True) -> None:
+    from app.core.config import settings
+
+    if not settings.ENABLE_TRACING:
+        # Ensure no tracer is active
+        trace.set_tracer_provider(None)
+        return
+
     # Setting OpenTelemetry
-    # set the service name to show in traces
     resource = Resource.create(attributes={
         "service.name": app_name,
         "compose_service": app_name
     })
 
-    # set the tracer provider
     tracer = TracerProvider(resource=resource)
-    trace.set_tracer_provider(tracer)
+    
+    # Use no-op exporter for tests with synchronous processing
+    if settings.ENVIRONMENT == "test":
+        from opentelemetry.sdk.trace.export import SimpleSpanProcessor
+        class NoOpSpanExporter:
+            def export(self, spans):
+                return None
+            def shutdown(self):
+                pass
+        tracer.add_span_processor(SimpleSpanProcessor(NoOpSpanExporter()))
+    else:
+        # Configure OTLP exporter with longer timeout and retry settings
+        otlp_exporter = OTLPSpanExporter(
+            endpoint=endpoint,
+            timeout=30,  # 30 second timeout
+        )
+        tracer.add_span_processor(BatchSpanProcessor(otlp_exporter))
 
-    tracer.add_span_processor(BatchSpanProcessor(
-        OTLPSpanExporter(endpoint=endpoint)))
+    trace.set_tracer_provider(tracer)
 
     if log_correlation:
         LoggingInstrumentor().instrument(set_logging_format=True)
