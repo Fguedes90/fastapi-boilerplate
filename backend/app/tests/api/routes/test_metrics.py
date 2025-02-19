@@ -1,8 +1,17 @@
 from fastapi.testclient import TestClient
 import pytest
 from app.main import app, APP_NAME
-
+from fastapi import Request, Response
 from app.observability import PrometheusMiddleware
+
+# Add test endpoints for error simulation
+@app.get("/trigger-500")
+async def trigger_500():
+    raise Exception("Internal server error simulation")
+
+@app.get("/trigger-403")
+async def trigger_403():
+    return Response(status_code=403)
 
 client = TestClient(app)
 
