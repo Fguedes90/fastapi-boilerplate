@@ -12,6 +12,8 @@ from opentelemetry.sdk.resources import Resource
 
 from app.api.main import api_router
 from app.core.config import settings
+from app.middleware import PrometheusMiddleware
+from app.metrics import metrics
 
 def setup_observability():
     if settings.ENABLE_METRICS:
