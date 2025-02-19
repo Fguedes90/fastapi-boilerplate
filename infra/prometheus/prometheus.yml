@@ -32,5 +32,6 @@ scrape_configs:
     # Override the global default and scrape targets from this job every 5 seconds.
     scrape_interval: 5s
 
+    metrics_path: '/api/v1/metrics'
     static_configs:
       - targets: ['backend:8000']
