@@ -1,4 +1,4 @@
-- [ ] Remover a dependência sentry-sdk[fastapi] do arquivo pyproject.toml e eliminar quaisquer configurações referentes ao Sentry.
+- [x] Remover a dependência sentry-sdk[fastapi] do arquivo pyproject.toml e eliminar quaisquer configurações referentes ao Sentry.
 - [ ] Consultar a documentação da stack de observabilidade para definir quais bibliotecas são necessárias para métricas, logging e tracing.
 - [ ] Adicionar no arquivo pyproject.toml as dependências identificadas para observabilidade.
 - [ ] Configurar a instrumentação de métricas na aplicação, implementando o middleware ou endpoint adequado.
