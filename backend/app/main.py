@@ -22,9 +22,11 @@ app = FastAPI(
 )
 
 # Setting metrics middleware
-app.add_middleware(PrometheusMiddleware, app_name=APP_NAME)
+# disable otlp if testing
+if os.environ.get("ENVIRONMENT") != "test":
+    app.add_middleware(PrometheusMiddleware, app_name=APP_NAME)
+    setting_otlp(app, APP_NAME, OTLP_GRPC_ENDPOINT)
 app.add_route("/metrics", metrics)
-setting_otlp(app, APP_NAME, OTLP_GRPC_ENDPOINT)
 
 # Set all CORS enabled origins
 if settings.all_cors_origins:

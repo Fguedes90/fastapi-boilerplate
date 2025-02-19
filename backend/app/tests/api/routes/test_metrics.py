@@ -1,8 +1,8 @@
 from fastapi.testclient import TestClient
 import pytest
-from prometheus_client import REGISTRY
 from app.main import app, APP_NAME
-from app.observability import PrometheusMiddleware, metrics
+
+from observability import PrometheusMiddleware
 
 client = TestClient(app)
 

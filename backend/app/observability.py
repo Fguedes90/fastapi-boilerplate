@@ -19,7 +19,6 @@ from starlette.responses import Response
 from starlette.routing import Match
 from starlette.status import HTTP_500_INTERNAL_SERVER_ERROR
 from starlette.types import ASGIApp
-from app.core.config import settings
 
 INFO = Gauge(
     "fastapi_app_info", "FastAPI application information.", [
