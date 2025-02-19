@@ -2,7 +2,7 @@ from fastapi.testclient import TestClient
 import pytest
 from app.main import app, APP_NAME
 
-from observability import PrometheusMiddleware
+from app.observability import PrometheusMiddleware
 
 client = TestClient(app)
 
@@ -79,6 +79,33 @@ async def test_exception_counter():
     # Verify that the 404 response was counted
     assert 'fastapi_responses_total{' in metrics_response.text
     assert 'status_code="404"' in metrics_response.text
+
+@ pytest.mark.asyncio
+async def test_exception_counter_500():
+    """Test if 500 exceptions are counted correctly"""
+    # Trigger a 500 error using a dedicated endpoint
+    response = client.get("/trigger-500")
+
+    # Get metrics
+    metrics_response = client.get("/metrics")
+
+    # Verify that the 500 response was counted
+    assert 'fastapi_responses_total{' in metrics_response.text
+    assert 'status_code="500"' in metrics_response.text
+
+
+@ pytest.mark.asyncio
+async def test_exception_counter_403():
+    """Test if 403 exceptions are counted correctly"""
+    # Trigger a 403 error using a dedicated endpoint
+    response = client.get("/trigger-403")
+
+    # Get metrics
+    metrics_response = client.get("/metrics")
+
+    # Verify that the 403 response was counted
+    assert 'fastapi_responses_total{' in metrics_response.text
+    assert 'status_code="403"' in metrics_response.text
 
 def test_prometheus_middleware_path_matching():
     """Test the path matching functionality of PrometheusMiddleware"""
