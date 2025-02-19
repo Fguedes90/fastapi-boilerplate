@@ -1,3 +1,9 @@
-adicionar as bibliotecas faltantes no backend
-adicionar e configurar a stack de observabilidade
-remover sentry
+- [ ] Remover a dependência sentry-sdk[fastapi] do arquivo pyproject.toml e eliminar quaisquer configurações referentes ao Sentry.
+- [ ] Consultar a documentação da stack de observabilidade para definir quais bibliotecas são necessárias para métricas, logging e tracing.
+- [ ] Adicionar no arquivo pyproject.toml as dependências identificadas para observabilidade.
+- [ ] Configurar a instrumentação de métricas na aplicação, implementando o middleware ou endpoint adequado.
+- [ ] Ajustar as configurações de logging para enviar os logs para a stack de observabilidade (ex.: Loki).
+- [ ] Integrar a ferramenta de tracing distribuído à aplicação, configurando a exportação para a solução definida (ex.: Tempo).
+- [ ] Atualizar as variáveis de ambiente e demais configurações relacionadas à  observabilidade.
+- [ ] Realizar testes locais para validar o funcionamento das novas integrações.
+- [ ] Adicionar e configurar dashboards para observabilidade.
