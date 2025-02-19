@@ -1,4 +1,5 @@
 import time
+import random
 from dataclasses import dataclass
 
 from opentelemetry import trace
@@ -74,6 +75,8 @@ class PrometheusMiddleware(BaseHTTPMiddleware):
     def _record_request_duration(self, method: str, path: str, start_time: float) -> None:
         duration = time.perf_counter() - start_time
         trace_id = trace.format_trace_id(trace.get_current_span().get_span_context().trace_id)
+        # Add small random delay to prevent timestamp collisions
+        time.sleep(random.uniform(0.001, 0.010))  # 1-10ms jitter
         self.metrics.requests_processing_time.labels(
             method=method,
             path=path,
