@@ -125,13 +125,9 @@ def setting_otlp(app: ASGIApp, app_name: str, endpoint: str, log_correlation: bo
     
     # Use no-op exporter for tests with synchronous processing
     if settings.ENVIRONMENT == "test":
-        from opentelemetry.sdk.trace.export import SimpleSpanProcessor
-        class NoOpSpanExporter:
-            def export(self, spans):
-                return None
-            def shutdown(self):
-                pass
-        tracer.add_span_processor(SimpleSpanProcessor(NoOpSpanExporter()))
+        # Disable stacktracing exportation in test mode by turning off tracing
+        trace.set_tracer_provider(None)
+        return
     else:
         # Configure OTLP exporter with longer timeout and retry settings
         otlp_exporter = OTLPSpanExporter(
