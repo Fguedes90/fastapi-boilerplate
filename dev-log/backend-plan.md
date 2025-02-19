@@ -7,3 +7,6 @@
 - [ ] Atualizar as variáveis de ambiente e demais configurações relacionadas à  observabilidade.
 - [ ] Realizar testes locais para validar o funcionamento das novas integrações.
 - [ ] Adicionar e configurar dashboards para observabilidade.
+  
+
+obs: caso alguma etapa ja tenha sido relizada, não esqueça de marca-la como feita.
