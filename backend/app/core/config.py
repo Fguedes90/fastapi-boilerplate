@@ -102,7 +102,7 @@ class Settings(BaseSettings):
     ENABLE_TRACING: bool = True
     METRICS_PORT: int = 8000
     OTLP_ENDPOINT: str = "http://tempo:4317"
-    SERVICE_NAME: str = "fastapi-app"
+    SERVICE_NAME: str = "backend"
     LOKI_HOST: str = "http://loki:3100"
 
     @model_validator(mode='after')

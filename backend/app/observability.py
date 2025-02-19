@@ -28,7 +28,7 @@ class MetricsConfig:
     requests_in_progress: Gauge = Gauge("fastapi_requests_in_progress", "Gauge of requests by method and path currently being processed", ["method", "path", "app_name"])
 
 class PrometheusMiddleware(BaseHTTPMiddleware):
-    def __init__(self, app: ASGIApp, app_name: str = "fastapi-app") -> None:
+    def __init__(self, app: ASGIApp, app_name: str = "backend") -> None:
         super().__init__(app)
         self.app_name = app_name
         self.metrics = MetricsConfig()

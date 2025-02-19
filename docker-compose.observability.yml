@@ -29,6 +29,7 @@ services:
     image: grafana/tempo:latest
     restart: always
     command: ["-config.file=/etc/tempo.yml"]
+    user: "0:0"  # Run as root to ensure write permissions
     volumes:
       - ./infra/tempo/tempo.yml:/etc/tempo.yml
       - tempo-data:/tmp/tempo
