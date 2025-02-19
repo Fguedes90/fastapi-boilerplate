@@ -37,11 +37,7 @@ down:
 	docker-compose -f docker-compose.observability.yml down
 	docker-compose -f docker-compose.traefik.yml down
 	docker network rm observability || true
-
-logs:
-	@echo "Exibindo logs..."
-	docker-compose logs -f
-
+    
 backend-install:
 	@echo "Instalando dependências do backend (uv sync)..."
 	cd backend && uv sync
@@ -62,8 +58,8 @@ setup: backend-install frontend-install precommit-install
 	@echo "Setup inicial concluído."
 
 loki-driver:
-        @echo "Instalando driver loki..."
-        docker plugin install grafana/loki-docker-driver:2.9.2 --alias loki --grant-all-permissions
+	@echo "Instalando driver loki..."
+	docker plugin install grafana/loki-docker-driver:2.9.2 --alias loki --grant-all-permissions
 
 lint:
 	@echo "Executando lint (pre-commit)..."
@@ -75,7 +71,6 @@ clean:
 	@echo "Removendo diretórios __pycache__..."
 	find . -type d -name '__pycache__' -exec rm -rf {} +
 
-# Observability commands
 obs-up:
 	docker-compose -f docker-compose.observability.yml up -d
 
