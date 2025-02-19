@@ -5,11 +5,11 @@ from fastapi import Request, Response
 from app.observability import PrometheusMiddleware
 
 # Add test endpoints for error simulation
-@app.get("/trigger-500")
+@app.get("/trigger-500", tags=["test-endpoints"])
 async def trigger_500():
     raise Exception("Internal server error simulation")
 
-@app.get("/trigger-403")
+@app.get("/trigger-403", tags=["test-endpoints"])
 async def trigger_403():
     return Response(status_code=403)
 
